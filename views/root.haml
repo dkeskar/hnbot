@@ -1,0 +1,9 @@
+%h2 Top 10x10
+%p These are the top 10 items by points in the last 10 hours. 
+
+%ul.simple
+	- @top10.each do |item|
+		%li
+			%a{:href => item.link}= item.title 
+			
+			
