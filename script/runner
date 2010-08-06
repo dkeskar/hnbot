@@ -2,7 +2,7 @@
 require 'optparse'
 
 code_or_file = nil
-options = { :environment => (ENV['SINATRA_ENV'] || "development").dup }
+options = { :environment => (ENV['APP_ENV'] || "development").dup }
 
 ARGV.clone.options do |opts|
   script_name = File.basename($0)

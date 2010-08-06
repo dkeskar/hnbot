@@ -16,7 +16,7 @@ class Posting
     [:avatar_id, :title, :pntx, :cmtx, :posted_at].each do |attribute|
       set_data[attribute] = info[attribute]
     end
-    Posting.collection.update({:forum_id => info[:forum_id], :link => info[:link]}, 
+    Posting.collection.update({:link => info[:link]}, 
       {"$set" => set_data}, 
       :upsert => true
     )

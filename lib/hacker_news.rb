@@ -10,6 +10,16 @@ class HackerNews < Watchbot
     puts "Yay! #{Time.now}"
   end
   
+  def self.stats 
+    wb = Watchbot.where(:target_url => URL).first
+    {
+      :at => wb.last_refresh_at, 
+      :duration => ((wb.last_refresh_at - wb.start_refresh_at)/1.minute).round,
+      :posts => Posting.count,
+      :avatars => Avatar.count
+    }
+  end
+  
   def self.fetch(link, redir_limit = 5)
     raise "Too many HTTP redirects." if redir_limit == 0
     url = URI.parse(link)
@@ -73,12 +83,11 @@ class HackerNews < Watchbot
       if more = doc.search("tr/td.title/a[@href*='/x?fnid']")
         page_next = "#{URL}#{more.first[:href]}"
         sleep 42 + rand*42
-        $stderr.puts "Fetching: #{page_next}"
         HackerNews.refresh(page_next, page+1)
       end
     else 
       # Update last_refresh_at 
-      me = Watchbot.update({:target_url => URL}, :last_refresh_at => Time.now)
+      Watchbot.where(:target_url => URL).first.set(:last_refresh_at => Time.now)
     end    
   end  
 end
