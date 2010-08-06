@@ -17,12 +17,12 @@ class HackerNews < Watchbot
       else
         "n/a"
       end
-      Hash.new(
-      :at => wb.last_refresh_at, 
-      :duration => duration,
-      :posts => Posting.count,
-      :avatars => Avatar.count
-      )
+      {
+        :at => wb.last_refresh_at, 
+        :duration => duration,
+        :posts => Posting.count,
+        :avatars => Avatar.count        
+      }
     else
       nil
     end
