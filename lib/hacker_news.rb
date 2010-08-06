@@ -49,9 +49,14 @@ class HackerNews < Watchbot
     end
     me.update_attributes(:start_refresh_at => Time.now)
   end
+  
+  def self.quitting_time
+    # Update last_refresh_at 
+    Watchbot.where(:target_url => URL).first.set(:last_refresh_at => Time.now)    
+  end
 
   def self.refresh(url = nil, page=1)
-    return if page > MAX_PAGES
+    return HackerNews.quitting_time if page > MAX_PAGES
     
     hn = fetch(url || URL)
     doc = Hpricot(hn)
@@ -94,8 +99,7 @@ class HackerNews < Watchbot
         HackerNews.refresh(page_next, page+1)
       end
     else 
-      # Update last_refresh_at 
-      Watchbot.where(:target_url => URL).first.set(:last_refresh_at => Time.now)
+      HackerNews.quitting_time
     end    
   end  
 end
