@@ -1,9 +1,10 @@
 require 'net/http'
 require 'hpricot'
+require 'watchbot'
 
-class Watcher
+class HackerNews < Watchbot
   URL = 'http://news.ycombinator.com'
-  MAX_PAGES = 2
+  MAX_PAGES = 7
   
   def self.happy_times
     puts "Yay! #{Time.now}"
@@ -19,12 +20,25 @@ class Watcher
     else; rsp.error!
     end
   end
+  
+  def self.register(doc)
+    me = Watchbot.first_or_new(:target_url => URL)
+    if me.new_record?
+      me.name = doc.search("title").inner_html
+      me.icon_url = doc.search("link[@rel*='icon']").first[:href]
+      me.target_rss_url = "#{URL}/rss"
+      me.save
+    end
+    me.update_attributes(:start_refresh_at => Time.now)
+  end
 
   def self.refresh(url = nil, page=1)
     return if page > MAX_PAGES
     
     hn = fetch(url || URL)
     doc = Hpricot(hn)
+    
+    HackerNews.register(doc)
     
     links = doc.search("tr/td.title/a:not([@rel])")
     points = doc.search("tr/td.subtext/span")
@@ -60,8 +74,11 @@ class Watcher
         page_next = "#{URL}#{more.first[:href]}"
         sleep 42 + rand*42
         $stderr.puts "Fetching: #{page_next}"
-        Watcher.refresh(page_next, page+1)
+        HackerNews.refresh(page_next, page+1)
       end
+    else 
+      # Update last_refresh_at 
+      me = Watchbot.update({:target_url => URL}, :last_refresh_at => Time.now)
     end    
   end  
 end
