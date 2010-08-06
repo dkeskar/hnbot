@@ -20,9 +20,13 @@ end
 
 # root page
 get '/' do
+  haml :root
+end
+
+get '/hn' do
   @top10 = Posting.where(
     :posted_at.gte => (Time.now - 10.hours)
   ).sort(:pntx.desc).limit(10).all
   @stats = HackerNews.stats  
-  haml :root
+  haml :hn  
 end
