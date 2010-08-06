@@ -32,7 +32,7 @@ namespace :deploy do
       :cron_log => "#{shared_path}/log/cron.log"
     }
     varstr = vars.keys.map {|x| "#{x}=vars[x]"}.join('&')
-    run "whenever --set #{varstr}"
+    run "whenever  -f #{current_path}/schedule.rb --set #{varstr}"
     run "whenever -f #{current_path}/schedule.rb --update-crontab #{application}"  
   end
 # if you're still using the script/reapear helper you will need

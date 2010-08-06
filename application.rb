@@ -1,5 +1,7 @@
 require 'rubygems'
 require 'sinatra'
+require 'haml'
+
 require 'environment'
 
 configure do

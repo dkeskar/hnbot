@@ -5,6 +5,10 @@ class Watcher
   URL = 'http://news.ycombinator.com'
   MAX_PAGES = 2
   
+  def self.happy_times
+    puts "Yay! #{Time.now}"
+  end
+  
   def self.fetch(link, redir_limit = 5)
     raise "Too many HTTP redirects." if redir_limit == 0
     url = URI.parse(link)

@@ -19,6 +19,6 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 1.hour do 
-  runner "Watcher.refresh"
+every 1.minute do 
+  runner "Watcher.happy_times"
 end
