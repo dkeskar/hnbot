@@ -15,7 +15,7 @@ set :git_enable_submodules, 1
 set :scm_verbose, true
 set :use_sudo, false
 
-server domain, :app, :web
+server domain, :app, :web, :db
 
 after "deploy:symlink", "deploy:whenever"
 
@@ -28,12 +28,11 @@ namespace :deploy do
   
   desc "Update the crontab file"
   task :whenever, :roles => :db do
-    vars = {:environment => "production", :path => current_path, 
+    vars = {:environment => "production", :path => "#{current_path}", 
       :cron_log => "#{shared_path}/log/cron.log"
     }
-    varstr = vars.keys.map {|x| "#{x}=vars[x]"}.join('&')
-    run "whenever  -f #{current_path}/schedule.rb --set #{varstr}"
-    run "whenever -f #{current_path}/schedule.rb --update-crontab #{application}"  
+    varstr = vars.keys.map {|x| "#{x}=#{vars[x]}"}.join('&')
+    run "whenever  -f #{current_path}/schedule.rb --set '#{varstr}' --update-crontab #{application}"  
   end
 # if you're still using the script/reapear helper you will need
 # these http://github.com/rails/irs_process_scripts

@@ -11,13 +11,21 @@ class HackerNews < Watchbot
   end
   
   def self.stats 
-    wb = Watchbot.where(:target_url => URL).first
-    {
+    if wb = Watchbot.where(:target_url => URL).first
+      duration = if (wb.last_refresh_at and wb.start_refresh_at)
+        "#{((wb.last_refresh_at - wb.start_refresh_at)/1.minute).round} minutes"
+      else
+        "n/a"
+      end
+      Hash.new(
       :at => wb.last_refresh_at, 
-      :duration => ((wb.last_refresh_at - wb.start_refresh_at)/1.minute).round,
+      :duration => duration,
       :posts => Posting.count,
       :avatars => Avatar.count
-    }
+      )
+    else
+      nil
+    end
   end
   
   def self.fetch(link, redir_limit = 5)

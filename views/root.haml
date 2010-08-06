@@ -6,8 +6,10 @@
 		%li
 			%a{:href => item.link}= item.title 
 
-%p.stats= "Last refreshed #{@stats[:at]} in #{@stats[:duration]}m"
-%p.stats= "Postings: #{@stats[:posts]} Avatars: #{@stats[:avatars]}"
-
+- if @stats
+	%p.stats= "Last refreshed #{@stats[:at]} in #{@stats[:duration]}m"
+	%p.stats= "Postings: #{@stats[:posts]} Avatars: #{@stats[:avatars]}"
+- else 
+	%p "No stats. Not refreshed yet."
 			
 			

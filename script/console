@@ -13,5 +13,7 @@ command_line << libs.inject("") { |acc, lib| acc + %( -r "#{lib}") }
 command_line << "--simple-prompt"
 command = command_line.join(" ")
 
+ENV['APP_ENV'] = ARGV.first if ARGV.length > 0
+
 puts "Welcome to the sinatra console interface."
 exec command
