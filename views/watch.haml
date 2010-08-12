@@ -1,0 +1,12 @@
+- if not @watch.blank?
+	%div= "Added <strong>#{@watch.name}<strong> on watch"
+	<br/>
+
+%h3 Current Watches
+%p These users are being watched.
+%ul.simple 
+	- @watched.each do |av|
+		%li{:id => av.id}
+			%span{:style => (av.id.to_s == @highlight ? "font-weight:bold" : "")}= av.name
+
+%a{:href => "/hn"} Back

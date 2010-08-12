@@ -51,6 +51,8 @@ a:hover {
   text-decoration: none;
 }
 
+ul.horizontal {list-style:none;}
+ul.horizontal li {float:left; margin: 2px 10px}
 ul.simple {list-style:none;}
 span.numbers {font-size: 0.8em; width: 5em; text-align: right;;}
 .stats {text-align:center; font-size:small; font-style:italic;}

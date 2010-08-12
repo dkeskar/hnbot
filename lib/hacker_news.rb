@@ -8,6 +8,7 @@ class HackerNews < Watchbot
 	attr_accessor :links, :points, :users, :comments, :times, :more
 	
 	def self.refresh
+		$stderr.puts "Begin HN.refresh #{Time.now}"
 		@bot = HackerNews.first_or_create(:target_url => URL)
 		@bot.record(:begin)
 		@bot.crawl_page

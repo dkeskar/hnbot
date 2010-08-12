@@ -8,6 +8,10 @@ configure do
   set :views, "#{File.dirname(__FILE__)}/views"
 end
 
+before do 
+	params = params.with_indifferent_access if params.is_a?(Hash)
+end
+
 error do
   e = request.env['sinatra.error']
   Kernel.puts e.backtrace.join("\n")
@@ -29,6 +33,20 @@ get '/hn' do
   ).sort(:pntx.desc).limit(10).all
   @stats = HackerNews.stats  
   haml :hn  
+end
+
+get %r{/hn/watch(/([\w]+))?} do 
+	@highlight = params[:captures][1] 
+	$stderr.puts "highlight #{@highlight}"
+	@watched = Avatar.where(:watch => true).sort(:name.asc).all
+	haml :watch
+end
+
+post '/hn/watch' do 
+	@watch = Avatar.first_or_new(:name => params[:user])
+	@watch.watch = true
+	@watch.save
+	redirect "/hn/watch/#{@watch.id}"
 end
 
 post '/hn/streams' do 

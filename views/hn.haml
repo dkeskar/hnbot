@@ -1,12 +1,18 @@
+%h2 Set Watch
+%p Select a HN user to watch (e.g. pg, patio11)
+%form{:method => 'post', :action => '/hn/watch'}
+	%input{:type => 'text', :name => 'user'}
+	%input{:type => 'submit', :value => 'Watch'}
+<br/>
 %h2 Top 10x10
 %p These are the top 10 items by points in the last 10 hours. 
 
 %ul.simple
 	- @top10.each do |item|
 		%li
+			%div.meta{:style => 'float:right;'}= "#{item.pntx} points, #{item.cmtx} comments"
 			%div
 				%a{:href => item.link}= item.title 
-			%div.meta= "#{item.pntx} points, #{item.cmtx} comments"
 
 %div.stats
 	- if @stats
