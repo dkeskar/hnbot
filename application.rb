@@ -30,3 +30,11 @@ get '/hn' do
   @stats = HackerNews.stats  
   haml :hn  
 end
+
+post '/hn/streams' do 
+  
+end
+
+get '/hn/activity' do 
+  
+end

@@ -54,3 +54,4 @@ a:hover {
 ul.simple {list-style:none;}
 span.numbers {font-size: 0.8em; width: 5em; text-align: right;;}
 .stats {text-align:center; font-size:small; font-style:italic;}
+.meta {color: 555; font-size: 0.8em; font-style: italic; text-align:right;}

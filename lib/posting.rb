@@ -9,6 +9,8 @@ class Posting
   key :cmtx, Integer
   key :posted_at, Time
   
+  belongs_to :avatar
+  
   def self.add(info={})
     set_data = {}
     # posted at will have larger error drift if we set it all the time. 
