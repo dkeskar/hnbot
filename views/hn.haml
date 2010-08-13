@@ -1,5 +1,8 @@
 %h2 Set Watch
-%p Select a HN user to watch (e.g. pg, patio11)
+%p 
+	Select a HN user to watch (e.g. pg, patio11).
+	%a{:href => "/hn/watch"} See the watchlist.
+
 %form{:method => 'post', :action => '/hn/watch'}
 	%input{:type => 'text', :name => 'user'}
 	%input{:type => 'submit', :value => 'Watch'}
@@ -10,7 +13,7 @@
 %ul.simple
 	- @top10.each do |item|
 		%li
-			%div.meta{:style => 'float:right;'}= "#{item.pntx} points, #{item.cmtx} comments"
+			%div.meta{:style => 'float:right;'}= "#{item.pntx} pt, #{item.cmtx} cx"
 			%div
 				%a{:href => item.link}= item.title 
 

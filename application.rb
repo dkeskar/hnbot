@@ -36,7 +36,9 @@ get '/hn' do
 end
 
 get %r{/hn/watch(/([\w]+))?} do 
-	@highlight = params[:captures][1] 
+	if (opt = params[:captures]) and opt.is_a?(Array) and opt.size == 2
+		@highlight = opt.last
+	end
 	$stderr.puts "highlight #{@highlight}"
 	@watched = Avatar.where(:watch => true).sort(:name.asc).all
 	haml :watch
