@@ -51,7 +51,7 @@ end
 
 post '/hn/watch' do 
 	@watch = Avatar.first_or_new(:name => params[:user])
-	@watch.watch = true
+	@watch.watch = params[:unwatch] ? false : true
 	@watch.save
 	redirect "/hn/watch/#{@watch.id}"
 end
@@ -61,15 +61,23 @@ get '/configure' do
   haml :configure
 end
 
-get %r{/streams(/([\w]+))?} do 
-  # get activity for a stream
-	if (opt = params[:captures]) and opt.is_a?(Array) and opt.size == 2
-    @stream = Stream.where(:sid => opt.last).first
-  else
-    @streams = Stream.paginate(:page => params[:page])
-  end
-  haml :streams
+get '/streams' do 
+  Stream.paginate(:page => params[:page]).to_json
 end
+
+get '/streams/:stream_id.:format' do 
+  # get activity for a stream
+  @stream = Stream.where(:sid => params[:stream_id]).first
+  $stderr.puts "format: #{params[:format].inspect}"
+  case params[:format]
+  when :json, 'json'; @stream.activity.to_json
+  else; haml :streams
+  end
+end
+
+	#if (opt = params[:captures]) and opt.is_a?(Array) and opt.size > 2
+    #@stream = Stream.where(:sid => opt[1]).first
+  #else
 
 post '/streams' do 
   # create a stream based on config provided

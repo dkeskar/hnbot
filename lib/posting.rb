@@ -17,6 +17,7 @@ class Posting
   {{user}} submitted <a href="{{link}}><{{title}}</a> {{time}}<br/>
   {{cmtx}} comments, {{pntx} points.
   END
+  TEMPLATE.freeze
   
   def self.add(info={})
     set_data = {}

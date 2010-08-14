@@ -34,16 +34,15 @@ class Stream
     feed
   end
 
-  def interpolate(template, item)
-    str = template
+  def Stream.interpolate(template, item)
+    instr = template
     item.keys.each do |field|
-      str.gsub!(/\{\{#{field}\}\}/, item[field].to_s)
+      instr = instr.gsub(/\{\{#{field}\}\}/, item[field].to_s)
     end
-    str
+    instr
   end
 
-  def display(item)
-    $stderr.puts item.inspect
+  def self.display(item)
     templ = item[:comment] ? Comment::TEMPLATE : Posting::TEMPLATE
     interpolate(templ, item)
   end

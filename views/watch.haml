@@ -1,12 +1,26 @@
 - if not @watch.blank?
-	%div= "Added <strong>#{@watch.name}<strong> on watch"
-	<br/>
+  %div= "Added <strong>#{@watch.name}<strong> on watch"
+  <br/>
 
 %h3 Current Watches
 %p These users are being watched.
 %ul.simple 
-	- @watched.each do |av|
-		%li{:id => av.id}
-			%span{:style => (av.id.to_s == @highlight ? "font-weight:bold" : "")}= av.name
+  - @watched.each do |av|
+    %li{:id => av.id}
+      %a{:href => "#", :onclick => "removeWatch('#{av.name}'); return false;"} [u]
+      %span{:style => (av.id.to_s == @highlight ? "font-weight:bold" : "")}= av.name
 
 %a{:href => "/hn"} Back
+
+%form{:method => 'post', :action => '/hn/watch', :style => 'display:none;', :id => 'unwatch-form'}
+  %input{:type => 'hidden', :name => 'user', :value => nil, :id => 'user-name'}
+  %input{:type => 'hidden', :name => 'unwatch', :value => 'true'}
+  %input{:type => 'submit', :value => 'Unwatch'}
+
+<script type="text/javascript">
+function removeWatch(username) {
+document.getElementById('user-name').value = username;
+document.getElementById('unwatch-form').submit();
+return false;
+}
+</script>

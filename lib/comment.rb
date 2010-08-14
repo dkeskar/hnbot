@@ -23,6 +23,7 @@ class Comment
   {{text}}<br/>
   {{numrsp}} people responded.
   END
+  TEMPLATE.freeze
 
   def self.add(info={})
     set_data = {}

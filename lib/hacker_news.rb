@@ -40,17 +40,21 @@ class HackerNews < Watchbot
     end
   end
 
-  def crawl_threads(avatar)
+  def crawl_threads(avatar, doc=nil)
     # In each refresh period, check only the latest page of comment threads 
     # for each user in the watchlist. 
     $stderr.puts "--- HN: crawl_threads: #{avatar.name}"
-    @thread = HackerNews.fetch("#{CMT_URL}#{avatar.name}")
+    @thread = doc || HackerNews.fetch("#{CMT_URL}#{avatar.name}")
     @thread = Hpricot(@thread)
     
     comments = []
     texts = @thread.search("td.default/span.comment/font")
     hdrs = @thread.search("td.default/div/span.comhead")
-    cur_rsp = 0
+    indents = @thread.search("td/img[@src=http://ycombinator.com/images/s.gif]")
+    indents = indents.search("[@height=1]")
+    lvl_step = 40
+    rsp_for = nil
+    uppers = {}
     hdrs.each_with_index do |hdr, ix|
       html = hdr.inner_html
       if cid = html.match(/id=\"score_([^\"]+)\">/)
@@ -65,24 +69,33 @@ class HackerNews < Watchbot
       pid = html.match(/on\:\s+<a href=\".*id=([^"]+)\">/)
       pid = pid[1] if pid and pid.size > 1
 
-      points = html.match(/span id=\"score.*>(\d+)\s+points</)
+      points = html.match(/span id=\"score.*>(\d+)\s+point(s)?</)
       points = points[1].to_i if points and points.size > 1
 
       cmtr = html.match(/by\s+<a[^>]+>(\w+)<\/a>/)
       cmtr = cmtr[1] if cmtr and cmtr.size > 1
 
-      # count responses by others to this user's comments
-      if cmtr == avatar.name    # serves as init, since has to be true first
-        cur_rsp = 0
-        cur_parent = cid
-      else 
-        cur_rsp += 1 if parent == cur_parent
+      lvl = indents[ix][:width].to_i
+      uppers[lvl] = cid
+
+      # note comments which are in response to comments
+      parent = uppers[lvl - lvl_step] if lvl > 0 or parent.blank?  
+
+      if cmtr != avatar.name and rsp_for
+        # increment response count and move on
+        $stderr.puts "Rsp by #{cmtr} to #{rsp_for}"
+        Comment.increment({:cid => rsp_for}, :nrsp => 1)
         next
+      else
+        rsp_for = cid
       end
 
-      comments << 
+      $stderr.puts "Curlevl: #{lvl} Uppers: #{uppers.inspect}"
+      $stderr.puts "Comment: #{cid}, parent_cid: #{parent}, pid: #{pid}"
+
+      comments <<
       Comment.add(:avatar_id => avatar.id, :name => avatar.name,
-                  :cid => cid, :pid => pid, :nrsp => cur_rsp,
+                  :cid => cid, :pid => pid, :nrsp => 0,
                   :parent_cid => parent, 
                   :text => texts[ix].inner_html,
                   :pntx => points,
