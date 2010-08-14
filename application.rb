@@ -6,6 +6,7 @@ require 'environment'
 
 configure(:development) do |c|
   require 'sinatra/reloader'
+  c.also_reload('lib/*.rb')
 end
 
 configure do
@@ -60,14 +61,22 @@ get '/configure' do
   haml :configure
 end
 
-get '/streams' do 
+get %r{/streams(/([\w]+))?} do 
   # get activity for a stream
+	if (opt = params[:captures]) and opt.is_a?(Array) and opt.size == 2
+    @stream = Stream.where(:sid => opt.last).first
+  else
+    @streams = Stream.paginate(:page => params[:page])
+  end
+  haml :streams
 end
 
 post '/streams' do 
   # create a stream based on config provided
+  @stream = Stream.new(:sid => Stream.generate_stream_id)
+  @stream.config = {:user => params[:user], :points => params[:points].to_i}
+  @stream.title = params[:title]
+  @stream.save
+  redirect "/streams/#{@stream.sid}"
 end
 
-get '/activity/:stream_id' do 
-  
-end

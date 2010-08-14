@@ -1,0 +1,17 @@
+- if @stream
+  %h2 "Stream #{@stream.title || 'Untitled'}"
+  - @stream.activity.each do |item|
+    %div= item.to_yaml.gsub(/\n/, '<br/>')
+
+
+- if @streams
+  %h2 Instantiated Streams
+  - @streams.each do |stream|
+    %div
+      %h4= stream.sid + " - " + stream.title || "Untitled"
+      %p= stream.config.to_yaml.gsub(/\n/, '<br/>')
+
+  - if @streams.blank? 
+    %p <i>No streams</i>
+
+

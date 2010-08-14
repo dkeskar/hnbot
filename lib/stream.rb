@@ -3,7 +3,11 @@ class Stream
 
   USER = 1; TREND = 2; KEYWORD = 3;
 
+	AZSET = ("a".."z").to_a + ("A".."Z").to_a + (0..9).to_a
+	AZLEN = AZSET.size
+
   key :sid, String    # mavenn stream id
+  key :title, String
   key :config, Hash
   key :_type, String
 
@@ -15,10 +19,10 @@ class Stream
   
   def activity
     # only support user comment and submission watch currently 
-    return [] if self.stype != USER
 
-    avatar = Avatar.where(:name => self.config[:user])
-    comments = avatar.comments.sort(:$natural).limit(20).all
+    avatar = Avatar.where(:name => self.config[:user]).first
+    pts = self.config[:points] || 1
+    comments = avatar.comments.where(:pntx.gte => pts).sort(:$natural).paginate
     postings = avatar.postings.sort(:$natural).limit(20).all
     
     # interleave later
@@ -28,4 +32,10 @@ class Stream
       feed << item.info
     end
   end
+
+		
+	def self.generate_stream_id(len=11)
+		(1..len).map {AZSET[rand(AZLEN)]}.join
+	end
+
 end
