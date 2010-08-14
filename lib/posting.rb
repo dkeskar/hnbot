@@ -31,11 +31,13 @@ class Posting
     )
   end
 
+
   def info
     ret = {}
-    [:link, :title, :time, :pntx, :cmtx].each do |attr|
+    [:link, :title, :pntx, :cmtx].each do |attr|
       ret[attr] = self[attr]
     end
+    ret[:time] = self.posted_at
     ret 
   end
 end

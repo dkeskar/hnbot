@@ -1,7 +1,7 @@
 - if @stream
   %h2 "Stream #{@stream.title || 'Untitled'}"
   - @stream.activity.each do |item|
-    %div= item.to_yaml.gsub(/\n/, '<br/>')
+    %div= @stream.display(item)
 
 
 - if @streams

@@ -50,6 +50,7 @@ class HackerNews < Watchbot
     comments = []
     texts = @thread.search("td.default/span.comment/font")
     hdrs = @thread.search("td.default/div/span.comhead")
+    cur_rsp = 0
     hdrs.each_with_index do |hdr, ix|
       html = hdr.inner_html
       if cid = html.match(/id=\"score_([^\"]+)\">/)
@@ -61,7 +62,7 @@ class HackerNews < Watchbot
       pid = html.match(/<a\s+href=\".*=([^"]+)\">parent<\/a>/)
       parent = pid[1] if pid and pid.size > 1
 
-      pid = html.match(/<a href=\".*=([^"]+)\">link<\/a>/)
+      pid = html.match(/on\:\s+<a href=\".*id=([^"]+)\">/)
       pid = pid[1] if pid and pid.size > 1
 
       points = html.match(/span id=\"score.*>(\d+)\s+points</)
