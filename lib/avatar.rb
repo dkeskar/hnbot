@@ -7,5 +7,6 @@ class Avatar
   key :watch, Boolean
     
   has_many :postings
+  has_many :comments
   validates_presence_of :name
 end

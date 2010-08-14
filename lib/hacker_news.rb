@@ -70,10 +70,18 @@ class HackerNews < Watchbot
       cmtr = html.match(/by\s+<a[^>]+>(\w+)<\/a>/)
       cmtr = cmtr[1] if cmtr and cmtr.size > 1
 
-      next if cmtr != avatar.name
+      # count responses by others to this user's comments
+      if cmtr == avatar.name    # serves as init, since has to be true first
+        cur_rsp = 0
+        cur_parent = cid
+      else 
+        cur_rsp += 1 if parent == cur_parent
+        next
+      end
 
       comments << 
-      Comment.add(:avatar_id => avatar.id, :cid => cid, :pid => pid,
+      Comment.add(:avatar_id => avatar.id, :name => avatar.name,
+                  :cid => cid, :pid => pid, :nrsp => cur_rsp,
                   :parent_cid => parent, 
                   :text => texts[ix].inner_html,
                   :pntx => points,
@@ -128,7 +136,7 @@ class HackerNews < Watchbot
 			$stderr.puts "Posting: #{link.inner_html}"
 			tm = parse_time_from_post(ix)
 			if (tm > (Time.now - newer_than))
-				Posting.add(:avatar_id => av.id, 
+				Posting.add(:avatar_id => av.id, :name => av.name,
 					:link => link[:href], :title => link.inner_html,
 					:pntx => pts, :cmtx => cmts, :posted_at => tm
 				)

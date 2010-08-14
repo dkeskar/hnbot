@@ -4,6 +4,10 @@ require 'haml'
 
 require 'environment'
 
+configure(:development) do |c|
+  require 'sinatra/reloader'
+end
+
 configure do
   set :views, "#{File.dirname(__FILE__)}/views"
 end
@@ -51,10 +55,19 @@ post '/hn/watch' do
 	redirect "/hn/watch/#{@watch.id}"
 end
 
-post '/hn/streams' do 
-  
+get '/configure' do 
+  # UI for viewing stream types and configuring a new stream instance
+  haml :configure
 end
 
-get '/hn/activity' do 
+get '/streams' do 
+  # get activity for a stream
+end
+
+post '/streams' do 
+  # create a stream based on config provided
+end
+
+get '/activity/:stream_id' do 
   
 end

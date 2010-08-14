@@ -1,0 +1,12 @@
+%h2 Hacker News User Activity Stream 
+%form{:method => 'post', :action => '/streams'}
+  %p
+    %label  Username 
+    %span{:style => 'font-size:smaller; color:#777'} (e.g. pg, patio11)
+    %input{:type => 'text', :name => 'user'}
+  %p
+    %label Filter: Points &gt;=
+    %input{:type => 'text', :name => 'points', :value => 1}
+  %p
+    %input{:type => 'submit', :value => 'Watch'}
+
