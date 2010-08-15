@@ -58,7 +58,11 @@ get '/streams/new' do
 end
 
 get %r{/streams([\.](json|html))?$} do |specified, format|
-  @streams = Stream.paginate(:page => params[:page])
+  @streams = if params[:user]
+    Stream.where('config.user' => params[:user]).all
+  else
+    Stream.paginate(:page => params[:page])
+  end
   if format and format == 'json'
     @streams.to_json
   else

@@ -1,12 +1,13 @@
-%h2 Set Watch
-%p 
-  Select a HN user to watch (e.g. pg, patio11).
-  %a{:href => "/watch"} See the watchlist.
+%div{:style => 'display:none'}
+  %h2 Set Watch
+  %p 
+    Select a HN user to watch (e.g. pg, patio11).
+    %a{:href => "/watch"} See the watchlist.
 
-%form{:method => 'post', :action => '/watch'}
-  %input{:type => 'text', :name => 'user'}
-  %input{:type => 'submit', :value => 'Watch'}
-<br/>
+  %form{:method => 'post', :action => '/watch'}
+    %input{:type => 'text', :name => 'user'}
+    %input{:type => 'submit', :value => 'Watch'}
+  <br/>
 
 %h2 Top 10x10
 %p These are the top 10 items by points in the last 10 hours. 
