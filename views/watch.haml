@@ -9,6 +9,7 @@
     %li{:id => av.id}
       %a{:href => "#", :onclick => "removeWatch('#{av.name}'); return false;"} [u]
       %span{:style => (av.id.to_s == @highlight ? "font-weight:bold" : "")}= av.name
+      %span{:style => 'font-size:smaller;'}= "#{av.nwx} watchers"
 
 %a{:href => "/hn"} Back
 

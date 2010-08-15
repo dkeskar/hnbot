@@ -9,6 +9,16 @@
         #logo
           %h1
             %a{:href => '/'}= SiteConfig.title
+          %div{:style => 'float:right; text-align:right'}
+            %ul.horizontal
+              %li
+                %a{:href => '/watch'} Watchlist
+              %li
+                %a{:href => '/streams'} Streams
+              %li
+                %a{:href => '/streams/new'} Create Stream
+          %div{:style => 'clear:both;'}
+
       #content= yield
       #footer
         %p#legal= "&mdash; &copy; #{Time.now.strftime('%Y')} #{SiteConfig.app} &mdash;"

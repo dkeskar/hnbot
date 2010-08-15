@@ -24,7 +24,7 @@ class Comment
   <a href="{{link}}">{{title}}</a> within {{interval}}</div>
   {{text}}
   <div style="text-align:right; font-size:smaller; ">
-  <a href="{{comment}}">{{numrsp}} responses</a> 
+  {{points}}, <a href="{{comment}}">{{numrsp}} responses</a> 
   </div>
   </div>
   END
@@ -43,6 +43,7 @@ class Comment
   def info 
     ret = {:user => self.name, :text => self.text}
     ret[:comment] = "#{HackerNews::URL}/item?id=#{self.cid}"
+    ret[:points] = "#{self.pntx} point#{self.pntx > 1 ? 's' : ''}"
     ret[:numrsp] = self.nrsp
     if not (post = Posting.where(:pid => self.pid).first)
       ret[:interval] = ((Time.now - self.posted_at)/1.hour).round

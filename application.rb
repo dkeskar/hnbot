@@ -27,12 +27,8 @@ helpers do
   # add your helpers here
 end
 
-# root page
-get '/' do
-  haml :root
-end
 
-get '/hn' do
+get '/' do
   @top10 = Posting.where(
     :posted_at.gte => (Time.now - 10.hours)
   ).sort(:pntx.desc).limit(10).all
@@ -40,7 +36,7 @@ get '/hn' do
   haml :hn  
 end
 
-get %r{/hn/watch(/([\w]+))?} do 
+get %r{/watch(/([\w]+))?} do 
 	if (opt = params[:captures]) and opt.is_a?(Array) and opt.size == 2
 		@highlight = opt.last
 	end
@@ -49,26 +45,32 @@ get %r{/hn/watch(/([\w]+))?} do
 	haml :watch
 end
 
-post '/hn/watch' do 
+post '/watch' do 
 	@watch = Avatar.first_or_new(:name => params[:user])
   inc = params[:unwatch] ? -1 : 1
 	@watch.increment(:nwx => inc)
 	redirect "/hn/watch/#{@watch.id}"
 end
 
-get '/configure' do 
+get '/streams/new' do 
   # UI for viewing stream types and configuring a new stream instance
   haml :configure
 end
 
-get '/streams' do 
-  Stream.paginate(:page => params[:page]).to_json
+get %r{/streams([\.](json|html))?$} do |specified, format|
+  $stderr.puts "Streams format: #{format} spec #{specified}"
+  @streams = Stream.paginate(:page => params[:page])
+  if format and format == 'json'
+    @streams.to_json
+  else
+    haml :streams
+  end
 end
 
-get '/streams/:stream_id.:format' do 
+get '/streams/show/:stream_id.:format' do 
   # get activity for a stream
   @stream = Stream.where(:sid => params[:stream_id]).first
-  $stderr.puts "format: #{params[:format].inspect}"
+  $stderr.puts @stream.inspect
   case params[:format]
   when :json, 'json'; @stream.activity.to_json
   else; haml :streams
@@ -86,7 +88,7 @@ post '/streams' do
   @stream.title = params[:title]
   @stream.save
   if params[:format] == 'html' 
-    redirect "/streams/#{@stream.sid}.html"
+    redirect "/streams/show/#{@stream.sid}.html"
   else
     puts @stream.to_json
   end

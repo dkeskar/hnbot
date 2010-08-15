@@ -3,7 +3,7 @@ require 'mongo_mapper'
 require 'ostruct'
 
 SiteConfig = OpenStruct.new(
-               :title => 'Watchbots',
+               :title => 'Hacker News Watch',
                :author => 'Dhananjay Keskar',
                :app => 'watchbots',
                :url_base => 'http://localhost:4567/'

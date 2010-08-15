@@ -1,4 +1,7 @@
-%h2 Hacker News User Activity Stream 
+%h2 Create New Stream
+%p 
+  Currently, there is only one type of stream. <br/>
+  This is a user watch, which tracks their comments and submissions.
 %form{:method => 'post', :action => '/streams'}
   %p
     %label  Username 
@@ -9,7 +12,7 @@
     %input{:type => 'text', :name => 'points', :value => 1}
   %p
     %label Give it a descriptive title<br/>
-    %input{:type => 'text', :name => 'title'}
+    %input{:type => 'text', :name => 'title', :size => 42}
   %p
     %input{:type => 'hidden', :name => 'format', :value => 'html'}
     %input{:type => 'submit', :value => 'Watch'}

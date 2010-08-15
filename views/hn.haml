@@ -1,9 +1,9 @@
 %h2 Set Watch
 %p 
   Select a HN user to watch (e.g. pg, patio11).
-  %a{:href => "/hn/watch"} See the watchlist.
+  %a{:href => "/watch"} See the watchlist.
 
-%form{:method => 'post', :action => '/hn/watch'}
+%form{:method => 'post', :action => '/watch'}
   %input{:type => 'text', :name => 'user'}
   %input{:type => 'submit', :value => 'Watch'}
 <br/>

@@ -1,5 +1,5 @@
 - if @stream
-  %h2= "Stream #{@stream.title || 'Untitled'}"
+  %h2= "#{@stream.title || 'Untitled Stream'}"
   - @stream.activity.each do |item|
     %div= Stream.display(item)
 
@@ -7,9 +7,10 @@
 - if @streams
   %h2 Instantiated Streams
   - @streams.each do |stream|
-    %div
-      %h4= stream.sid + " - " + stream.title || "Untitled"
-      %p= stream.config.to_yaml.gsub(/\n/, '<br/>')
+    %div{:style => 'margin: 10px 0'}
+      %strong 
+        %a{:href => "/streams/show/#{stream.sid}.html"}= stream.title || "Untitled"
+      %div= stream.config.inspect
 
   - if @streams.blank? 
     %p <i>No streams</i>
