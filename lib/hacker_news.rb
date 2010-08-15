@@ -126,7 +126,7 @@ class HackerNews < Watchbot
 	end
   
   def gather_page_elements  
-    @links = @page.search("tr/td.title/a")
+    @links = @page.search("tr/td.title/a:first-child")
     @points = @page.search("tr/td.subtext/span")
     @users = @page.search("tr/td.subtext/a[@href*='user']")
     @comments = @page.search("tr/td.subtext/a[@href*='item']")

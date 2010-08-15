@@ -58,7 +58,6 @@ get '/streams/new' do
 end
 
 get %r{/streams([\.](json|html))?$} do |specified, format|
-  $stderr.puts "Streams format: #{format} spec #{specified}"
   @streams = Stream.paginate(:page => params[:page])
   if format and format == 'json'
     @streams.to_json
