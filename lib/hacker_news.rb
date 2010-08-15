@@ -60,7 +60,7 @@ class HackerNews < Watchbot
       if cid = html.match(/id=\"score_([^\"]+)\">/)
         cid = cid[1]
       end
-      tm = html.match(/\/a>\s+(\d+\s(hour|day|month)s?\s+ago)\s+\|/)
+      tm = html.match(/\/a>\s+(\d+\s(second|minute|hour|day|month|year)s?\s+ago)\s+\|/)
       tm = time_from_words(tm[1]) if tm and tm.size > 1
 
       pid = html.match(/<a\s+href=\".*=([^"]+)\">parent<\/a>/)

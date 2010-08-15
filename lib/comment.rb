@@ -54,7 +54,12 @@ class Comment
       ret[:link] = post.link
       ret[:link] = "#{HackerNews::URL}/#{post.link}" if post.link !~ /^http/
       ret[:title] = post.title
-      ret[:interval] = ((self.posted_at - post.posted_at)/1.minute).round
+      interval = if self.posted_at and post.posted_at
+        ((self.posted_at - post.posted_at)/1.minute).round
+      else
+        42
+      end
+      ret[:interval] = "#{interval} min"
     end
     ret
   end
