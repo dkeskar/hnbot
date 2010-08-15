@@ -24,8 +24,8 @@ class Stream
 
     avatar = Avatar.where(:name => self.config[:user]).first
     pts = self.config[:points] || 1
-    comments = avatar.comments.where(:pntx.gte => pts).sort(:$natural).paginate
-    postings = avatar.postings.sort(:$natural).limit(20).all
+    comments = avatar.comments.where(:pntx.gte => pts).sort(:$natural.desc).paginate
+    postings = avatar.postings.sort(:$natural.desc).limit(20).all
     
     # interleave later
     feed = []

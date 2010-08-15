@@ -46,7 +46,11 @@ class Comment
     ret[:points] = "#{self.pntx} point#{self.pntx > 1 ? 's' : ''}"
     ret[:numrsp] = self.nrsp
     if not (post = Posting.where(:pid => self.pid).first)
-      ret[:interval] = ((Time.now - self.posted_at)/1.hour).round
+      interval = if self.posted_at
+        ((Time.now - self.posted_at)/1.hour).round
+      else
+        42
+      end
       # FIXME: This needs to be refactored into the proper place
       ret[:title] = 'another comment'
       ret[:link] = "#{HackerNews::URL}/item?id=#{self.parent_cid}"
@@ -59,8 +63,8 @@ class Comment
       else
         42
       end
-      ret[:interval] = "#{interval} min"
     end
+    ret[:interval] = "#{interval} min"
     ret
   end
 end
