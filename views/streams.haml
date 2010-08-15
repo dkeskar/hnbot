@@ -1,5 +1,5 @@
 - if @stream
-  %h2 "Stream #{@stream.title || 'Untitled'}"
+  %h2= "Stream #{@stream.title || 'Untitled'}"
   - @stream.activity.each do |item|
     %div= Stream.display(item)
 

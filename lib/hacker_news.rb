@@ -149,12 +149,14 @@ class HackerNews < Watchbot
       cmts = @comments[ix].inner_html.split(/s/).first.to_i if @comments[ix]
       pid = @comments[ix][:href].match(/item\?id=(\w+)/)
       pid = pid[1] if pid and pid.size > 1
+      lnk = link[:href]
+      lnk = "#{HackerNews::URL}/#{lnk}" if lnk !~ /^http/
                                        
 			$stderr.puts "P: #{pid} #{link.inner_html}"
 			tm = parse_time_from_post(ix)
 			if (tm > (Time.now - newer_than))
 				Posting.add(:avatar_id => av.id, :name => av.name,
-					:link => link[:href], :title => link.inner_html,
+					:link => lnk, :title => link.inner_html,
 					:pntx => pts, :cmtx => cmts, :posted_at => tm,
           :pid => pid
 				)

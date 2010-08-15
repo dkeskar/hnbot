@@ -18,10 +18,15 @@ class Comment
   belongs_to :parent, :class => "Comment"
   
   TEMPLATE = <<-END
-  {{user}} <a href="{{comment}}">commented</a> on 
-  <a href="{{link}}">{{title}}</a> within {{interval}}<br/>
-  {{text}}<br/>
-  {{numrsp}} people responded.
+  <div style="margin: 10px 0; padding: 6px 0;">
+  <div style="background-color: #efefef">
+  {{user}} on 
+  <a href="{{link}}">{{title}}</a> within {{interval}}</div>
+  {{text}}
+  <div style="text-align:right; font-size:smaller; ">
+  <a href="{{comment}}">{{numrsp}} responses</a> 
+  </div>
+  </div>
   END
   TEMPLATE.freeze
 
@@ -36,13 +41,17 @@ class Comment
   end
 
   def info 
-    ret = {:user => self.name, :comment => self.cid, :text => self.text}
+    ret = {:user => self.name, :text => self.text}
+    ret[:comment] = "#{HackerNews::URL}/item?id=#{self.cid}"
     ret[:numrsp] = self.nrsp
     if not (post = Posting.where(:pid => self.pid).first)
-      $stderr.puts "Comment: #{cid} couldn't find Posting #{pid}." 
       ret[:interval] = ((Time.now - self.posted_at)/1.hour).round
+      # FIXME: This needs to be refactored into the proper place
+      ret[:title] = 'another comment'
+      ret[:link] = "#{HackerNews::URL}/item?id=#{self.parent_cid}"
     else
       ret[:link] = post.link
+      ret[:link] = "#{HackerNews::URL}/#{post.link}" if post.link !~ /^http/
       ret[:title] = post.title
       ret[:interval] = ((self.posted_at - post.posted_at)/1.minute).round
     end
