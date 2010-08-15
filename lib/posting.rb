@@ -23,11 +23,8 @@ class Posting
     set_data = {}
     # posted at will have larger error drift if we set it all the time. 
     # Better if set first time and never changed later. 
-    [:avatar_id, :name, :title, :pntx, :cmtx, :posted_at].each do |attribute|
-      set_data[attribute] = info[attribute]
-    end
     Posting.collection.update({:link => info[:link]}, 
-      {"$set" => set_data}, 
+      {"$set" => info}, 
       :upsert => true
     )
   end

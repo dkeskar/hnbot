@@ -45,14 +45,14 @@ get %r{/hn/watch(/([\w]+))?} do
 		@highlight = opt.last
 	end
 	$stderr.puts "highlight #{@highlight}"
-	@watched = Avatar.where(:watch => true).sort(:name.asc).all
+	@watched = Avatar.where(:nwx.gt => 0).sort(:name.asc).all
 	haml :watch
 end
 
 post '/hn/watch' do 
 	@watch = Avatar.first_or_new(:name => params[:user])
-	@watch.watch = params[:unwatch] ? false : true
-	@watch.save
+  inc = params[:unwatch] ? -1 : 1
+	@watch.increment(:nwx => inc)
 	redirect "/hn/watch/#{@watch.id}"
 end
 
@@ -85,6 +85,10 @@ post '/streams' do
   @stream.config = {:user => params[:user], :points => params[:points].to_i}
   @stream.title = params[:title]
   @stream.save
-  redirect "/streams/#{@stream.sid}"
+  if params[:format] == 'html' 
+    redirect "/streams/#{@stream.sid}.html"
+  else
+    puts @stream.to_json
+  end
 end
 

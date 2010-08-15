@@ -33,7 +33,7 @@ class HackerNews < Watchbot
 	end
 
   def refresh_watchlist
-    @watched = Avatar.where(:watch => true).sort(:$natural.desc).all
+    @watched = Avatar.watched
     @watched.each do |user|
       crawl_threads(user)
       sleep 23 + rand*42
@@ -53,7 +53,7 @@ class HackerNews < Watchbot
     indents = @thread.search("td/img[@src=http://ycombinator.com/images/s.gif]")
     indents = indents.search("[@height=1]")
     lvl_step = 40
-    rsp_for = nil
+    rspfor = []
     uppers = {}
     hdrs.each_with_index do |hdr, ix|
       html = hdr.inner_html
@@ -81,17 +81,17 @@ class HackerNews < Watchbot
       # note comments which are in response to comments
       parent = uppers[lvl - lvl_step] if lvl > 0 or parent.blank?  
 
-      if cmtr != avatar.name and rsp_for
+      $stderr.puts "L: #{lvl} by: #{cmtr} cid: #{cid}"
+      rspfor.pop if !rspfor.empty? and rspfor.last[:level] >= lvl
+      if cmtr != avatar.name and !rspfor.empty?
         # increment response count and move on
-        $stderr.puts "Rsp by #{cmtr} to #{rsp_for}"
-        Comment.increment({:cid => rsp_for}, :nrsp => 1)
+        Comment.increment({:cid => rspfor.last[:cid]}, :nrsp => 1)
         next
       else
-        rsp_for = cid
+        rspfor.push({:level => lvl, :cid => cid})
       end
 
-      $stderr.puts "Curlevl: #{lvl} Uppers: #{uppers.inspect}"
-      $stderr.puts "Comment: #{cid}, parent_cid: #{parent}, pid: #{pid}"
+      $stderr.puts rspfor.inspect
 
       comments <<
       Comment.add(:avatar_id => avatar.id, :name => avatar.name,
@@ -147,12 +147,16 @@ class HackerNews < Watchbot
       av = Avatar.first_or_create(:name => @users[ix].inner_html)
       pts = @points[ix].inner_html.split(/\s/).first.to_i if @points[ix]
       cmts = @comments[ix].inner_html.split(/s/).first.to_i if @comments[ix]
-			$stderr.puts "Posting: #{link.inner_html}"
+      pid = @comments[ix][:href].match(/item\?id=(\w+)/)
+      pid = pid[1] if pid and pid.size > 1
+                                       
+			$stderr.puts "P: #{pid} #{link.inner_html}"
 			tm = parse_time_from_post(ix)
 			if (tm > (Time.now - newer_than))
 				Posting.add(:avatar_id => av.id, :name => av.name,
 					:link => link[:href], :title => link.inner_html,
-					:pntx => pts, :cmtx => cmts, :posted_at => tm
+					:pntx => pts, :cmtx => cmts, :posted_at => tm,
+          :pid => pid
 				)
 			else
 				$stderr.puts "Not fresh: #{tm} #{link.inner_html}"

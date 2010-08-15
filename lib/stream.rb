@@ -1,5 +1,6 @@
 class Stream
   include MongoMapper::Document
+  before_save :update_avatar_settings
 
   USER = 1; TREND = 2; KEYWORD = 3;
 
@@ -10,6 +11,7 @@ class Stream
   key :title, String
   key :config, Hash
   key :_type, String
+  key :cache, Hash    # cache config in effect
 
   def self.activity(sid)
     me = Stream.where(:sid => sid).load
@@ -51,5 +53,12 @@ class Stream
 	def self.generate_stream_id(len=11)
 		(1..len).map {AZSET[rand(AZLEN)]}.join
 	end
+
+  def update_avatar_settings
+    previous = self.cache ? self.cache[:user] :nil
+    Avatar.unwatch(previous) if previous
+    self.cache[:user] = self.config[:user]
+    Avatar.watch(self.cache[:user])
+  end
 
 end
