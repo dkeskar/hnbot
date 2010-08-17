@@ -9,7 +9,7 @@
   - @streams.each do |stream|
     %div{:style => 'margin: 10px 0'}
       %strong 
-        %a{:href => "/streams/show/#{stream.sid}.html"}= stream.title || "Untitled"
+        %a{:href => "/hners/#{stream.sid}.html"}= stream.title || "Untitled"
       %div= stream.config.inspect
 
   - if @streams.blank? 

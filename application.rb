@@ -52,12 +52,12 @@ post '/watch' do
 	redirect "/hn/watch/#{@watch.id}"
 end
 
-get '/streams/new' do 
+get '/hners/new' do 
   # UI for viewing stream types and configuring a new stream instance
   haml :configure
 end
 
-get %r{/streams([\.](json|html))?$} do |specified, format|
+get %r{/hners([\.](json|html))?$} do |specified, format|
   @streams = if params[:user]
     Stream.where('config.user' => params[:user]).all
   else
@@ -70,7 +70,7 @@ get %r{/streams([\.](json|html))?$} do |specified, format|
   end
 end
 
-get '/streams/show/:stream_id.:format' do 
+get '/hners/:stream_id.:format' do 
   # get activity for a stream
   @stream = Stream.where(:sid => params[:stream_id]).first
   $stderr.puts @stream.inspect
@@ -84,16 +84,24 @@ end
     #@stream = Stream.where(:sid => opt[1]).first
   #else
 
-post '/streams' do 
+post '/hners' do 
   # create a stream based on config provided
   @stream = Stream.new(:sid => Stream.generate_stream_id)
   @stream.config = {:user => params[:user], :points => params[:points].to_i}
   @stream.title = params[:title]
   @stream.save
   if params[:format] == 'html' 
-    redirect "/streams/show/#{@stream.sid}.html"
+    redirect "/hners/#{@stream.sid}.html"
   else
     puts @stream.to_json
   end
 end
 
+# update config parameters for an existing stream
+put '/hners/:sid' do 
+  "put #{params[:sid]}"
+end
+
+delete '/hners/:sid' do 
+  "delete #{params[:sid]}"
+end

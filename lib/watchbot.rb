@@ -53,5 +53,21 @@ class Watchbot
 			"Refreshed never"
 		end
   end
+
+  # extracts a time value from words such as "21 minutes ago"
+  def time_from_words(tmstr)
+    return Time.now if tmstr.blank?
+    tm = tmstr.strip.split(/\s/)
+    period = case tm[1]
+    when "hour", "hours"; :hour
+    when "day", "days"; :day
+    when "minute", "minutes"; :minute
+    when "month", "months"; :month
+    when "year", "years"; :year
+    else
+      return Time.now
+    end
+    tm = Time.now - (tm.first.to_i).send(period)
+  end
   
 end

@@ -9,7 +9,7 @@
     %li{:id => av.id}
       %a{:href => "#", :onclick => "removeWatch('#{av.name}');", :style => 'display:none;'} [u]-->
       %span{:style => (av.id.to_s == @highlight ? "font-weight:bold" : "")}= av.name
-      %a{:href => "/streams.html?user=#{av.name}"}= "(#{av.nwx})"
+      %a{:href => "/hners.html?user=#{av.name}"}= "(#{av.nwx})"
 
 %a{:href => "/hn"} Back
 

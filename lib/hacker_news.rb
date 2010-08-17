@@ -13,15 +13,15 @@ class HackerNews < Watchbot
 	
 	def self.refresh
 		$stderr.puts "Begin HN.refresh #{Time.now}"
-		@bot = HackerNews.first_or_create(:target_url => URL)
-		@bot.record(:begin)
-		@bot.crawl_page
-    @bot.refresh_watchlist
-		@bot.record(:end)
+		bot = HackerNews.first_or_create(:target_url => URL)
+		bot.record(:begin)
+		bot.crawl_page
+    bot.refresh_watchlist
+		bot.record(:end)
 	rescue => e
 		$stderr.puts "#{e.class} #{e.message}", e.backtrace
 	ensure
-		return @bot
+		return bot
 	end
 
 	def self.stats
@@ -110,7 +110,7 @@ class HackerNews < Watchbot
 		@page = HackerNews.fetch(url)
 		@page = Hpricot(@page)
 
-		update_bot_bio
+		update_bot_bio if page == 1
 		gather_page_elements
 		if process_page_elements and page < MAX_PAGES and @more
 			sleep 42 + rand*42
@@ -173,18 +173,4 @@ class HackerNews < Watchbot
     tm and tm.size > 1 ? time_from_words(tm[1]) : Time.now
 	end
 
-  def time_from_words(tmstr)
-    return Time.now if tmstr.blank?
-    tm = tmstr.strip.split(/\s/)
-    period = case tm[1]
-    when "hour", "hours"; :hour
-    when "day", "days"; :day
-    when "minute", "minutes"; :minute
-    when "month", "months"; :month
-    when "year", "years"; :year
-    else
-      return Time.now
-    end
-    tm = Time.now - (tm.first.to_i).send(period)
-  end
 end
