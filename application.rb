@@ -64,6 +64,7 @@ get %r{/hners([\.](json|html))?$} do |specified, format|
     Stream.paginate(:page => params[:page])
   end
   if format and format == 'json'
+    content_type :json
     @streams.to_json
   else
     haml :streams
@@ -80,8 +81,11 @@ get '/hners/:stream_id.:format' do
     @activity = Stream.preview
   end
   case params[:format]
-  when :json, 'json'; @activity.to_json
-  else; haml :streams
+  when :json, 'json'
+    content_type :json
+    @activity.to_json
+  else
+    haml :streams
   end
 end
 
@@ -98,7 +102,8 @@ post '/hners' do
   if params[:format] == 'html' 
     redirect "/hners/#{@stream.sid}.html"
   else
-    puts @stream.to_json
+    content_type :json
+    @stream.to_json
   end
 end
 
