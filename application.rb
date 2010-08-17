@@ -72,10 +72,15 @@ end
 
 get '/hners/:stream_id.:format' do 
   # get activity for a stream
-  @stream = Stream.where(:sid => params[:stream_id]).first
-  $stderr.puts @stream.inspect
+  if params[:stream_id] != 'preview'
+    @stream = Stream.where(:sid => params[:stream_id]).first
+    @activity = @stream.activity
+  else
+    @stream = Stream.new(:title => "HN Users Preview")
+    @activity = Stream.preview
+  end
   case params[:format]
-  when :json, 'json'; @stream.activity.to_json
+  when :json, 'json'; @activity.to_json
   else; haml :streams
   end
 end

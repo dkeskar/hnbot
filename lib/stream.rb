@@ -18,6 +18,12 @@ class Stream
     return [] if not me 
     me.activity 
   end
+
+  def self.preview
+    cmt = Comment.sort(:$natural.desc).limit(15).all
+    pst = Posting.sort(:$natural.desc).limit(10).all
+    (cmt + pst).shuffle.map {|x| x.info}
+  end
   
   def activity
     # only support user comment and submission watch currently 
