@@ -35,7 +35,8 @@ class Posting
     [:link, :title, :pntx, :cmtx].each do |attr|
       ret[attr] = self[attr]
     end
-    ret[:time] = self.posted_at
+    ret[:user] = self.name
+    ret[:time] = self.posted_at   # FIXME: relative time please
     ret[:template] = self.class.to_s.underscore
     ret 
   end
