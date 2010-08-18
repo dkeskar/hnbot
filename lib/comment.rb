@@ -65,6 +65,7 @@ class Comment
       end
     end
     ret[:interval] = "#{interval} min"
+    ret[:template] = self.class.to_s.underscore
     ret
   end
 end

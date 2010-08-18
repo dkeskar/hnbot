@@ -36,6 +36,7 @@ class Posting
       ret[attr] = self[attr]
     end
     ret[:time] = self.posted_at
+    ret[:template] = self.class.to_s.underscore
     ret 
   end
 end
