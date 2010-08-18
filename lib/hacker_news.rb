@@ -25,10 +25,11 @@ class HackerNews < Watchbot
 	end
 
 	def self.stats
+    status = (hn = HackerNews.first) ? hn.refresh_status : "Not refreshed"
 		{ 
 			:posts => Posting.count, 
 			:avatars => Avatar.count,
-			:refresh => HackerNews.first.refresh_status
+			:refresh => status
 		}
 	end
 
