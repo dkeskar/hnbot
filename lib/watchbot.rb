@@ -15,18 +15,6 @@ class Watchbot
 	# used by mongomapper to track classes
 	key :_type, String	
 
-  # Fetch URI, deals with redirects
-  def self.fetch(link, redir_limit = 5)
-    raise "Too many HTTP redirects." if redir_limit == 0
-    url = URI.parse(link)
-    rsp = Net::HTTP.get_response(url)
-    case rsp 
-    when Net::HTTPSuccess; rsp.body
-    when Net::HTTPRedirection; fetch(rsp['location'], redir_lim - 1)
-    else; rsp.error!
-    end
-  end
-
 	# Record refresh actions
 	def record(action=:begin) 
 		case action
@@ -54,20 +42,4 @@ class Watchbot
 		end
   end
 
-  # extracts a time value from words such as "21 minutes ago"
-  def time_from_words(tmstr)
-    return Time.now if tmstr.blank?
-    tm = tmstr.strip.split(/\s/)
-    period = case tm[1]
-    when "hour", "hours"; :hour
-    when "day", "days"; :day
-    when "minute", "minutes"; :minute
-    when "month", "months"; :month
-    when "year", "years"; :year
-    else
-      return Time.now
-    end
-    tm = Time.now - (tm.first.to_i).send(period)
-  end
-  
 end
