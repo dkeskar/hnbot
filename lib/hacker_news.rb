@@ -31,16 +31,15 @@ class HackerNews < Watchbot
 	end
 
   def refresh_watchlist
+    thread = Discussion.new(CMT_URL)
     Avatar.watched.each do |user|
-      thread = Discussion.new
-      thread.base_url = "#{CMT_URL}#{user.name}"
+      thread.user = user
       thread.crawl
     end
   end
   
 	def refresh_postings
-    list = List.new
-    list.base_url = URL
+    list = List.new(URL)
     list.crawl
 	end
 

@@ -1,6 +1,7 @@
 class Stream
   include MongoMapper::Document
   before_save :update_avatar_settings
+  before_destroy :unwatch_avatar
 
   USER = 1; TREND = 2; KEYWORD = 3;
 
@@ -65,6 +66,10 @@ class Stream
     Avatar.unwatch(previous) if previous
     self.cache[:user] = self.config[:user]
     Avatar.watch(self.cache[:user])
+  end
+
+  def unwatch_avatar
+    Avatar.unwatch(self.cache[:user])
   end
 
 end

@@ -1,7 +1,18 @@
 
 # logic for parsing and making sense of news.yc/thread
 class Discussion < Crawler
-  
+  attr_accessor :hdrs
+
+  def initialize(cmt_url)
+    @cmt_url = cmt_url
+    super
+  end
+
+  def user=(avatar)
+    raise "Expect Avatar" if not avatar.is_a?(Avatar)
+    @avatar = avatar
+    @base_url = "#{@cmt_url}#{@avatar.name}"
+  end
 
   def process_page
     raise ArgumentError, "Missing document to process" if not @doc
@@ -9,13 +20,13 @@ class Discussion < Crawler
 
     count = 0
     texts = @doc.search("td.default/span.comment/font")
-    hdrs = @doc.search("td.default/div/span.comhead")
+    @hdrs = @doc.search("td.default/div/span.comhead")
     indents = @doc.search("td/img[@src=http://ycombinator.com/images/s.gif]")
     indents = indents.search("[@height=1]")
     lvl_step = 40
     rspfor = []
     uppers = {}
-    hdrs.each_with_index do |hdr, ix|
+    @hdrs.each_with_index do |hdr, ix|
       html = hdr.inner_html
       if cid = html.match(/id=\"score_([^\"]+)\">/)
         cid = cid[1]
@@ -43,7 +54,8 @@ class Discussion < Crawler
 
       $stderr.puts "L: #{lvl} by: #{cmtr} cid: #{cid}"
       rspfor.pop if !rspfor.empty? and rspfor.last[:level] >= lvl
-      if cmtr != avatar.name and !rspfor.empty?
+
+      if cmtr != @avatar.name and !rspfor.empty?
         # increment response count and move on
         Comment.increment({:cid => rspfor.last[:cid]}, :nrsp => 1)
         next
@@ -51,16 +63,18 @@ class Discussion < Crawler
         rspfor.push({:level => lvl, :cid => cid})
       end
 
+      text = texts[ix].inner_html
+
+      $stderr.puts "C: #{cid} #{text.slice(0..60)}"
       $stderr.puts rspfor.inspect
 
-      cm = Comment.add(:avatar_id => avatar.id, :name => avatar.name,
+      Comment.add(:avatar_id => @avatar.id, :name => @avatar.name,
                   :cid => cid, :pid => pid, :nrsp => 0,
                   :parent_cid => parent, 
-                  :text => texts[ix].inner_html,
+                  :text => text,
                   :pntx => points,
                   :posted_at => tm
                  )
-      $stderr.puts "C: #{cm.cid} #{cm.text.slice(0..42)}"
       count += 1
     end
     count

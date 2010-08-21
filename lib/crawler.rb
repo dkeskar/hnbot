@@ -20,7 +20,7 @@ class Crawler
   # Fetch URI, deals with redirects
   def self.fetch(link, redir_limit = 5)
     raise "Too many HTTP redirects." if redir_limit == 0
-    url = URI.parse(link)
+    url = URI.parse(URI.encode(link))
     rsp = Net::HTTP.get_response(url)
     case rsp 
     when Net::HTTPSuccess; rsp.body
@@ -46,7 +46,7 @@ class Crawler
   end
 
   def full_url(link)
-    return link if link =~ /^http/
+    return link if link.nil? or link =~ /^http/
     link = "/#{link}" if link !~ /^\//
     "#{@base_url}#{link}"
   end
@@ -55,11 +55,13 @@ class Crawler
     url = @base_url if page == 1 and url.nil?
     url = full_url(url)
     $stderr.puts "Crawl: more: #{url}, pg: #{page}"
+    raise "URL needs to be passed on or set via #base_url" if not url
+
     @doc = Crawler.fetch(url)
     @doc = Hpricot(@doc)
-    process_page
+    count = process_page
 
-    if process_page > 0 and page < max_pages and (more = url_next)
+    if count > 0 and page < @max_pages and (more = url_next)
       sleep 10 #wait_interval
       crawl(more, page+1)
     end

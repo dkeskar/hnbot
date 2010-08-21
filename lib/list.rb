@@ -2,6 +2,11 @@
 # parse and process news.yc list of links
 class List < Crawler
 
+  def initialize(url)
+    @base_url = url
+    super
+  end
+
   def process_page
     raise ArgumentError, "Missing document to process" if not @doc
     raise ArgumentError, "Expect Hpricot::Doc" if not @doc.is_a?(Hpricot::Doc)

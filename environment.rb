@@ -2,6 +2,8 @@ require 'rubygems'
 require 'mongo_mapper'
 require 'ostruct'
 
+$KCODE = 'u'
+
 SiteConfig = OpenStruct.new(
                :title => 'Hacker News Watch',
                :author => 'Dhananjay Keskar',
