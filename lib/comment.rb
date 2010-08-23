@@ -9,6 +9,10 @@ class Comment
   key :cid, String
   key :parent_cid, String       
 
+  # maintain thread contexts within this document
+  key :contexts, Array
+  key :responses, Array 
+
   key :text, String
   key :pntx, Integer
   key :nrsp, Integer, :default => 0
