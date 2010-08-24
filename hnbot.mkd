@@ -1,0 +1,77 @@
+
+# Hacker News Bot 
+
+Provides a stream of hacker news activity for a person. 
+
+## Purpose 
+
+1. Track interesting people, e.g. pg, patio11, sachinag, etc. 
+2. People-oriented view of conversation similar to Facebook News Feed.
+3. Percolate interesting streams into composite topics 
+4. Gather interest and feedback from HN Users.
+5. Get noticed. 
+
+## Functionality Required
+
+1. Get comments for each user on watchlist
+2. Track and excerpt responses in between. 
+3. Excerpt the posting
+
+## Stream Template
+
+[
+{
+  person: 'name',
+  event: 'commented on', 
+  object: {
+    person: 'charliepark',
+    type: 'posting',
+    title: 'No, You can\'t retire rich at 30 if you sell your startup',
+    link: 'http://www.tonywright.com/2010/no-you-cant-retire-rich-at-30-if-you-sell-your-startup/',
+    thumb: 'http://www.tonywright.com/wp-content/uploads/2010/08/rym1.png',
+    summary: 'I personally find the people who are in the software startup game just for the money to often be nearly delusional about their chances of success and the likely magnitude of it when it happens. Before I get into the details for founders, let me talk about options-hungry employees. If you are in it for the money and you aren’t a founder, you’re sticking your head in the sand.',
+    stats: {points: 199, comments: 176}
+    time: '9 hours ago'
+  },
+  time: '7 hours ago',
+  interval: '2 hours'
+  activity: "There's little that's specific to startups here. What he's arguing is that being independently wealthy doesn't work the way one might naively think. But few things do work the way one might naively think.<br/>Certainly his title is false though. Obviously it depends how much you clear.", 
+  contexts: [], 
+  responses: [
+    {
+      person: 'huhtenberg', 
+      time: '2 hours ago', 
+      activity: '> But few things do work the way one might naively think.<br/> A bit cryptic. Can you elaborate?',
+      stats: {points: 1}
+    }
+  ]
+},
+{
+  person: 'pg',
+  event: 'commented on',
+  object: {
+    person: 'oldmanstan',
+    type: 'question',
+    title: 'Ask HN: What questions do you ask yourself often/repeatedly?',
+    link: 'http://news.ycombinator.com/item?id=1624116',
+    summary: 'Some of mine, wherever I am, include: - Why is this like THIS? And how could I make this beter? - STOP - Why are you doing this? (This is usually when I'm doing something I shouldn't be, like incessantly checking HN.) - Will I regret not doing this? (Whenever a big decision needs to be made.)',
+    stats: {points 25, comments: 17}
+    time: '2 days ago',
+  }  
+
+    
+
+  }
+}
+]
+
+
+
+# NOtes 
+HN already shows threaded comments properly for each user. Just keep it handy. 
+
+## Priority 
+
+Highest until 8/25. 
+Orbitz and Expedia vacation packages after that.
+
