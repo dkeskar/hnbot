@@ -21,6 +21,7 @@ class Discussion < Crawler
     lvl_spacer = 'http://ycombinator.com/images/s.gif'
     count = 0
     rspfor = []
+    tracked_pid = nil
     uppers = {}
 
     @doc.search("td.default").each_with_index do |cmt, ix| 
@@ -35,11 +36,16 @@ class Discussion < Crawler
       tm = Crawler.time_from_words(tm[1]) if tm and tm.size > 1
 
       # beware - threaded comments displayed without parent link.
-      pid = html.match(/<a\s+href=\".*=([^"]+)\">parent<\/a>/)
-      parent = pid[1] if pid and pid.size > 1
+      # which is why we maintain tracked_pid 
+      parent = html.match(/<a\s+href=\".*=([^"]+)\">parent<\/a>/)
+      parent = parent[1] if parent and parent.size > 1
 
       pid = html.match(/on\:\s+<a href=\".*id=([^"]+)\">/)
-      pid = pid[1] if pid and pid.size > 1
+      if pid and pid.size > 1
+        tracked_pid = pid = pid[1] 
+      else
+        pid = tracked_pid
+      end
 
       points = html.match(/span id=\"score.*>(\d+)\s+point(s)?</)
       points = points[1].to_i if points and points.size > 1
@@ -74,17 +80,25 @@ class Discussion < Crawler
                   :posted_at => tm
                  )
       # Track response threads
-      if cmtr != @avatar.name and !rspfor.empty?
-        # increment response count for parent
+      if not rspfor.empty?
         context = rspfor.last[:cid]
+        # track response and increment count for parent
         Comment.increment({:cid => context}, :nrsp => 1)
-        # This should be done in terms of our ObjectIds
+        response = { 
+          :name => cmtr, 
+          :posted_at => tm, 
+          :cid => cid, 
+          :text => text,
+          :pntx => points
+        }
+        Comment.push({:cid => context}, :responses => response)
+        # To get an accurate context, we need to crawl up the 
+        # parent link until we reach the article item or a top-level 
+        # comment. 
         Comment.push({:cid => cid}, :contexts => context)
-        Comment.push({:cid => context}, :responses => cid)
-      else
-        rspfor.push({:level => lvl, :cid => cid})
       end
 
+      rspfor.push({:level => lvl, :cid => cid})
       $stderr.puts rspfor.inspect
     end
     count

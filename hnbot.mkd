@@ -48,10 +48,10 @@ person, place, product, company, topic
     stats: {points 25, comments: 17}
     time: '2 days ago',
   }  
-
-    
-
-  }
+  time: '1 day ago',
+  interval: '1 day',
+  contexts: [],
+  responses: []
 }
 ]
 

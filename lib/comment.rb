@@ -72,4 +72,5 @@ class Comment
     ret[:template] = self.class.to_s.underscore
     ret
   end
+
 end

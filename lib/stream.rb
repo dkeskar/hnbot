@@ -17,20 +17,48 @@ class Stream
   def self.activity(sid)
     me = Stream.where(:sid => sid).load
     return [] if not me 
-    me.activity 
+    me.feed 
   end
 
   def self.preview
-    cmt = Comment.sort(:$natural.desc).limit(15).all
-    pst = Posting.sort(:$natural.desc).limit(10).all
-    (cmt + pst).shuffle.map {|x| x.info}
+    pv = Stream.limit(20).sort(:$natural.desc).all.shuffle.random_element
+    pv ? pv.feed : []
   end
   
+  # Facebook style feed
+  def feed
+    avatar = Avatar.where(:name => self.config[:user]).first
+    points = self.config[:points] || 1
+
+    comments = avatar.comments.where(:pntx.gte => pts).sort(:posted_at.desc).paginate
+    postings = avatar.postings.sort(:posted_at.desc).limit(20).all
+    result = []
+
+    while !comments.empty? and !postings.empty do 
+      cm = comments.shift
+      ps = postings.shift
+      item = if cm and ps 
+        cm.posted_at > ps.posted_at ? cm : ps 
+      else
+        cm || ps
+      end
+      case item
+      when Comment; postings.unshift(ps) if ps
+      when Posting; comments.unshift(cm) if cm
+      end
+      result << item.feed_data
+    end
+    result
+  end
+
   def activity
     # only support user comment and submission watch currently 
 
     avatar = Avatar.where(:name => self.config[:user]).first
     pts = self.config[:points] || 1
+
+    # Items are already entered in reverse chronological order. 
+    # Getting them back in natural order is fine.
     comments = avatar.comments.where(:pntx.gte => pts).sort(:$natural).paginate
     postings = avatar.postings.sort(:$natural).limit(20).all
     
