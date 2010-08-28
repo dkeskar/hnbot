@@ -18,33 +18,23 @@ Provides a stream of hacker news activity for a person.
 3. Excerpt the posting
 
 ## Stream Template
-
+person, place, product, company, topic
 [
 {
-  person: 'name',
-  event: 'commented on', 
+  person: 'pg',
+  event: 'comment',
   object: {
+    link: 'http://www.tonywright.com/2010/no-you-cant-retire-rich-at-30-if-you-sell-your-startup/',
+    title: 'No, You can\'t retire rich at 30 if you sell your startup',
     person: 'charliepark',
     type: 'posting',
-    title: 'No, You can\'t retire rich at 30 if you sell your startup',
-    link: 'http://www.tonywright.com/2010/no-you-cant-retire-rich-at-30-if-you-sell-your-startup/',
     thumb: 'http://www.tonywright.com/wp-content/uploads/2010/08/rym1.png',
     summary: 'I personally find the people who are in the software startup game just for the money to often be nearly delusional about their chances of success and the likely magnitude of it when it happens. Before I get into the details for founders, let me talk about options-hungry employees. If you are in it for the money and you aren’t a founder, you’re sticking your head in the sand.',
     stats: {points: 199, comments: 176}
-    time: '9 hours ago'
+    time: 'UTC Time.'
   },
-  time: '7 hours ago',
-  interval: '2 hours'
+  time: 'Thu Aug 26 13:38:51 -0700 2010',
   activity: "There's little that's specific to startups here. What he's arguing is that being independently wealthy doesn't work the way one might naively think. But few things do work the way one might naively think.<br/>Certainly his title is false though. Obviously it depends how much you clear.", 
-  contexts: [], 
-  responses: [
-    {
-      person: 'huhtenberg', 
-      time: '2 hours ago', 
-      activity: '> But few things do work the way one might naively think.<br/> A bit cryptic. Can you elaborate?',
-      stats: {points: 1}
-    }
-  ]
 },
 {
   person: 'pg',
@@ -65,7 +55,16 @@ Provides a stream of hacker news activity for a person.
 }
 ]
 
-
+# deprecated
+  contexts: [], 
+  responses: [
+    {
+      person: 'huhtenberg', 
+      time: '2 hours ago', 
+      activity: '> But few things do work the way one might naively think.<br/> A bit cryptic. Can you elaborate?',
+      stats: {points: 1}
+    }
+  ]
 
 # NOtes 
 HN already shows threaded comments properly for each user. Just keep it handy. 
