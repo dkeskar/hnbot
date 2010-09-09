@@ -72,16 +72,21 @@ end
 
 get '/hners/:stream_id.:format' do 
   # get activity for a stream
-  if params[:stream_id] != 'preview'
-    @stream = Stream.where(:sid => params[:stream_id]).first
-    @activity = @stream.activity
-  else
+  if params[:stream_id] == 'default'
     @stream = Stream.new(:title => "HN Users Preview")
     @activity = Stream.preview
+  else
+    @stream = Stream.where(:sid => params[:stream_id]).first
+    not_found and return if not @stream
+    @activity = @stream.activity
   end
   case params[:format]
   when :json, 'json'
-    jsonp @activity
+    ret = {:success => (!@stream.nil? && !@activity.nil?)}
+    ret[:stream_id] = @stream ? @stream.sid : params[:stream_id]
+    ret[:id] = @stream.id if @stream
+    ret[:activity] = @activity || []
+    jsonp ret
   else
     haml :streams
   end
@@ -91,16 +96,31 @@ end
     #@stream = Stream.where(:sid => opt[1]).first
   #else
 
-post '/hners' do 
+post %r{/hners([\.](json|html))?$} do |specified, format|
   # create a stream based on config provided
-  @stream = Stream.new(:sid => Stream.generate_stream_id)
+  @stream = Stream.new(:sid => params[:stream_id])
+  @stream.sid ||= Stream.generate_stream_id
   @stream.config = {:user => params[:user], :points => params[:points].to_i}
   @stream.title = params[:title]
-  @stream.save
-  if params[:format] == 'html' 
-    redirect "/hners/#{@stream.sid}.html"
+  rc = @stream.save
+  if rc
+    msg = "Stream created and queued for monitoring"
+    status = "Created"
   else
-    jsonp @stream
+    msg = "Failed to create stream." 
+    status = "Failed"
+  end
+  if format and format == 'json' 
+    ret = {:success => rc, :status => status, :message => msg}
+    ret[:id] = @stream.id
+    ret[:stream_id] = @stream.sid
+    jsonp ret
+  else
+    if rc
+      redirect "/hners/#{@stream.sid}.html"
+    else 
+      haml :configure
+    end
   end
 end
 
