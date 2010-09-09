@@ -83,8 +83,9 @@ get '/hners/:stream_id.:format' do
   case params[:format]
   when :json, 'json'
     ret = {:success => (!@stream.nil? && !@activity.nil?)}
-    ret[:stream_id] = @stream ? @stream.sid : params[:stream_id]
-    ret[:id] = @stream.id if @stream
+    ret[:stream_id] = @stream.sid 
+    ret[:id] = @stream.id 
+    ret[:status] = @stream.status
     ret[:activity] = @activity || []
     jsonp ret
   else

@@ -6,6 +6,7 @@ class Avatar
   key :since, Integer 
   key :watch, Boolean
   key :nwx, Integer, :default => 0
+  key :valid, Boolean, :default => true
     
   has_many :postings
   has_many :comments

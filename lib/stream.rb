@@ -13,6 +13,7 @@ class Stream
   key :config, Hash
   key :_type, String
   key :cache, Hash    # cache config in effect
+  key :status, String, :default => "Active"
 
   def self.activity(sid)
     me = Stream.where(:sid => sid).load

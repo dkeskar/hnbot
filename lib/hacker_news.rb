@@ -33,6 +33,10 @@ class HackerNews < Watchbot
   def refresh_watchlist
     thread = Discussion.new(CMT_URL)
     Avatar.watched.each do |user|
+      if not user.valid 
+        # suspend streams that watch this user and mark them invalid
+        # That should automatically decrement avatar.nwx
+      end
       thread.user = user
       thread.crawl
     end

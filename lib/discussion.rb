@@ -24,7 +24,11 @@ class Discussion < Crawler
     tracked_pid = nil
     uppers = {}
 
-    @doc.search("td.default").each_with_index do |cmt, ix| 
+    entries = @doc.search("td.default")
+    if entries.empty? and @doc.inner_html =~ /no such user/i
+      @avatar.set(:valid => false)
+    end
+    entries.each_with_index do |cmt, ix| 
       text = cmt.search("span.comment/font").inner_html
       info = cmt.search("div/span.comhead")
       html = info.inner_html
