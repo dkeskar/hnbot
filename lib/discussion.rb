@@ -1,4 +1,4 @@
-
+require 'crawler'
 # logic for parsing and making sense of news.yc/thread
 class Discussion < Crawler
 

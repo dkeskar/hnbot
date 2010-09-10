@@ -1,4 +1,4 @@
-
+require 'crawler'
 # parse and process news.yc list of links
 class List < Crawler
 
