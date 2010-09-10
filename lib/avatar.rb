@@ -32,10 +32,5 @@ class Avatar
     Avatar.decrement(:nwx => -1*num)
   end
 
-  # news feed of user activity 
-  def feed(points)
-    # How will mavenn aggregate the different items? 
-
-  end
 end
 

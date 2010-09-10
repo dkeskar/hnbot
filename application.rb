@@ -69,25 +69,24 @@ get '/hners/new' do
   haml :configure
 end
 
+# list of streams, possibly filtered by user
 get %r{/hners([\.](json|html))?$} do |specified, format|
-  @streams = if params[:user]
-    Stream.where('config.user' => params[:user]).all
-  else
-    Stream.paginate(:page => params[:page])
-  end
+  criteria = params[:user] ? {'config.user' => params[:user]} : {}
+  @streams = Stream.all(criteria)
   case format
   when 'json'; jsonp @streams
   else; haml :streams
   end
 end
 
+# activity for a specific stream
 get '/hners/:stream_id.:format' do 
   # get activity for a stream
   if params[:stream_id] == 'default'
     @stream = Stream.new(:title => "HN Users Preview")
     @activity = Stream.preview
   else
-    @stream = Stream.where(:sid => params[:stream_id]).first
+    @stream = Stream.first(:sid => params[:stream_id])
     not_found and return if not @stream
     @activity = @stream.activity
   end
@@ -98,7 +97,7 @@ get '/hners/:stream_id.:format' do
     ret[:activity] = @activity || []
     jsonp ret
   else
-    haml :streams
+    haml :activity
   end
 end
 

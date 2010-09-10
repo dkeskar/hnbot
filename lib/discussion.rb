@@ -68,7 +68,7 @@ class Discussion < Crawler
       # note comments which are in response to comments
       parent = uppers[lvl - lvl_step] if lvl > 0 or parent.blank?  
 
-      $stderr.puts "L: #{lvl} by: #{cmtr} cid: #{cid}"
+      $stderr.puts "L: #{lvl} by: #{cmtr} cid: #{cid} pid: #{pid}"
       rspfor.pop while !rspfor.empty? and rspfor.last[:level] >= lvl
 
       $stderr.puts "C: #{cid} #{text.slice(0..60)}..."

@@ -15,17 +15,6 @@ class Stream
   key :cache, Hash    # cache config in effect
   key :status, String, :default => "Active"
 
-  def self.activity(sid)
-    me = Stream.where(:sid => sid).load
-    return [] if not me 
-    me.feed 
-  end
-
-  def self.preview
-    pv = Stream.limit(20).sort(:$natural.desc).all.shuffle.random_element
-    pv ? pv.feed : []
-  end
-  
   # Facebook style feed
   def feed
     avatar = Avatar.where(:name => self.config[:user]).first
@@ -72,19 +61,18 @@ class Stream
     feed
   end
 
-  def Stream.interpolate(template, item)
-    instr = template
-    item.keys.each do |field|
-      instr = instr.gsub(/\{\{#{field}\}\}/, item[field].to_s)
-    end
-    instr
+  def self.preview
+    pv = Stream.limit(20).sort(:$natural.desc).all.shuffle.random_element
+    pv ? pv.activity : []
   end
-
+  
   def self.display(item)
     templ = item[:comment] ? Comment::TEMPLATE : Posting::TEMPLATE
-    interpolate(templ, item)
+    item.keys.each do |field|
+      templ = templ.gsub(/\{\{#{field}\}\}/, item[field].to_s)
+    end
+    templ
   end
-
 		
 	def self.generate_stream_id(len=11)
 		(1..len).map {AZSET[rand(AZLEN)]}.join

@@ -1,9 +1,3 @@
-- if @stream
-  %h2= "#{@stream.title || 'Untitled Stream'}"
-  - @activity.each do |item|
-    %div= Stream.display(item)
-
-
 - if @streams
   %h2 Instantiated Streams
   - @streams.each do |stream|
