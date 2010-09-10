@@ -15,16 +15,54 @@ class Stream
   key :cache, Hash    # cache config in effect
   key :status, String, :default => "Active"
 
-  # Facebook style feed
-  def feed
-    avatar = Avatar.where(:name => self.config[:user]).first
-    points = self.config[:points] || 1
+  # activity as [ {actor, object, action} ]
+  def tuples(avatar=nil)
+    retval = []
 
-    comments = avatar.comments.where(:pntx.gte => pts).sort(:posted_at.desc).paginate
-    postings = avatar.postings.sort(:posted_at.desc).limit(20).all
+    avatar ||= Avatar.first(:name => self.config[:user])
+    points = self.config[:points] || 1
+    actor = {:person => avatar.name}
+
+    # There are two kinds of actions - comment and submit
+    # The posting link is our object, regardless of the action. 
+    # We will NOT aggregate multiple comments for a given object. 
+    # For comment action, we will include parent comment if any
+    
+    comments = avatar.comments.where(:pntx.gte => points)
+    comments = comments.sort(:posted_at.desc).limit(25).all
+    
+    submits = avatar.postings.sort(:posted_at.desc).limit(20).all
+
+    pmap = {nil => {}}
+    pids = comments.map {|c| c.pid }
+    postings = Posting.all(:pid => {"$in" => pids})
+    postings.each {|p| pmap[p.pid] = p.objectify}
+
+    cmap = {}
+    cids = comments.map {|c| [c.parent_cid, c.contexts]}.uniq.flatten
+    parents = Comment.all(:cid => {"$in" => cids})
+    parents.each {|c| cmap[c.cid] = c.threadify}
+                        
+    combined = interleave_by_posted_at(comments, postings)
+    combined.each do |item| 
+      object = pmap[item.pid] 
+      action = item.actify
+      thread = []
+      if item.is_a?(Comment)
+        item.contexts.push(item.parent_cid).uniq.each do |tcid|
+          thread << cmap[tcid]
+        end
+        action[:meta].update(:thread => thread)
+      end
+      retval << {:object => object, :action => action, :actor => actor}
+    end
+    retval
+  end
+
+  def interleave_by_posted_at(comments, postings)
     result = []
 
-    while !comments.empty? and !postings.empty do 
+    while !comments.empty? and !postings.empty? do 
       cm = comments.shift
       ps = postings.shift
       item = if cm and ps 
@@ -36,7 +74,7 @@ class Stream
       when Comment; postings.unshift(ps) if ps
       when Posting; comments.unshift(cm) if cm
       end
-      result << item.feed_data
+      result << item
     end
     result
   end
@@ -62,8 +100,8 @@ class Stream
   end
 
   def self.preview
-    pv = Stream.limit(20).sort(:$natural.desc).all.shuffle.random_element
-    pv ? pv.activity : []
+    av = Avatar.first(:name => %w(pg patio11 tptacek).shuffle.shift)
+    Stream.new.tuples(av)
   end
   
   def self.display(item)

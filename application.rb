@@ -82,13 +82,13 @@ end
 # activity for a specific stream
 get '/hners/:stream_id.:format' do 
   # get activity for a stream
-  if params[:stream_id] == 'default'
+  if params[:stream_id] == 'default' or params[:stream_id] == 'preview'
     @stream = Stream.new(:title => "HN Users Preview")
     @activity = Stream.preview
   else
     @stream = Stream.first(:sid => params[:stream_id])
     not_found and return if not @stream
-    @activity = @stream.activity
+    @activity = @stream.tuples
   end
   case params[:format]
   when :json, 'json'

@@ -35,6 +35,16 @@ class Posting
   end
 
 
+  def objectify 
+    # thumb and summary to come soon
+    { :url => self.link, :title => self.title, :time => self.posted_at.to_s}
+  end
+
+  def actify
+    { :url => self.link, :title => self.title, 
+      :time => self.posted_at.to_s, :type => 'submit'}
+  end
+
   def info
     ret = {}
     [:link, :title, :pntx, :cmtx].each do |attr|

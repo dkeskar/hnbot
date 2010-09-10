@@ -44,6 +44,29 @@ class Comment
     )
   end
 
+  def self.addToSet(cid, setname, element)
+    Comment.collection.update(
+      {:cid => cid, setname => {"$ne" => element}}, 
+      {"$push" => {setname => element}}
+    )
+  end
+
+  def actify
+    info = {:type => 'comment', :time => self.posted_at.to_s, :uid => self.cid}
+    info[:url] = "#{HackerNews::URL}/item?id=#{self.cid}"
+    info[:summary] = self.text
+    info[:meta] = {:points => self.pntx, :responses => self.nrsp}
+    info
+  end
+
+  def threadify
+    # return info for inclusion in a thread
+    info = {:type => 'context', :time => self.posted_at.to_s, :uid => self.cid}
+    info[:person] = self.name
+    info[:summary] = self.text
+    info
+  end
+
   def info 
     ret = {:user => self.name, :text => self.text}
     ret[:comment] = "#{HackerNews::URL}/item?id=#{self.cid}"
