@@ -35,7 +35,9 @@ class HackerNews < Watchbot
     Avatar.watched.each do |user|
       if not user.valid 
         # suspend streams that watch this user and mark them invalid
-        # That should automatically decrement avatar.nwx
+        # That also automatically removes avatar from the watch list
+        Stream.invalidate(user)
+        next
       end
       thread.user = user
       thread.crawl

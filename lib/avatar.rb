@@ -26,6 +26,10 @@ class Avatar
     Avatar.where(:nwx.gt => 0).sort(:$name.asc).all
   end
 
+  def unwatch(num)
+    Avatar.decrement(:nwx => -1*num)
+  end
+
   # news feed of user activity 
   def feed(points)
     # How will mavenn aggregate the different items? 

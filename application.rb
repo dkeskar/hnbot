@@ -14,17 +14,29 @@ configure do
 end
 
 before do 
+  merge_json_data_into_params
 	params = params.with_indifferent_access if params.is_a?(Hash)
 end
 
 error do
   e = request.env['sinatra.error']
+  Kernel.puts "Parameters: #{params.inspect}"
   Kernel.puts e.backtrace.join("\n")
   'Application error'
 end
 
 helpers do
   # add your helpers here
+  def request_headers
+    #env.inject({}){|acc, (k,v)| acc[$1.downcase] = v if k =~ /^http_(.*)/i; acc}
+    env.inject({}){|acc, (k,v)| acc[k] = v; acc}
+  end
+  def merge_json_data_into_params
+    if request.content_type == 'application/json' and (request.post? or request.put?)
+      json_data = JSON::parse(request.body.string)
+      json_data.keys.each {|k| params[k] = json_data[k] }
+    end
+  end
 end
 
 
@@ -63,10 +75,9 @@ get %r{/hners([\.](json|html))?$} do |specified, format|
   else
     Stream.paginate(:page => params[:page])
   end
-  if format and format == 'json'
-    jsonp @streams
-  else
-    haml :streams
+  case format
+  when 'json'; jsonp @streams
+  else; haml :streams
   end
 end
 
@@ -96,6 +107,11 @@ end
 	#if (opt = params[:captures]) and opt.is_a?(Array) and opt.size > 2
     #@stream = Stream.where(:sid => opt[1]).first
   #else
+
+post %r{/tests([\.](json|html))?$} do |specified, format|
+  ret = {:ok => true, :params => params}
+  jsonp ret
+end
 
 post %r{/hners([\.](json|html))?$} do |specified, format|
   # create a stream based on config provided

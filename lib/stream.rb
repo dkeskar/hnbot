@@ -90,6 +90,12 @@ class Stream
 		(1..len).map {AZSET[rand(AZLEN)]}.join
 	end
 
+  def self.invalidate(avatar)
+    streams = Stream.all("cache.user" => avatar.name)
+    Stream.set({:id => {"$in" => streams.map{|x| x.id}}}, :status => 'Invalid')
+    avatar.unwatch(streams.size)
+  end
+
   def update_avatar_settings
     previous = self.cache ? self.cache[:user] :nil
     Avatar.unwatch(previous) if previous
