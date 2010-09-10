@@ -33,14 +33,13 @@ class HackerNews < Watchbot
   def refresh_watchlist
     thread = Discussion.new(CMT_URL)
     Avatar.watched.each do |user|
-      if not user.valid 
-        # suspend streams that watch this user and mark them invalid
-        # That also automatically removes avatar from the watch list
+      begin
+        next if not user.valid 
+        thread.user = user
+        thread.crawl
+      rescue Avatar::NoSuchUser
         Stream.invalidate(user)
-        next
       end
-      thread.user = user
-      thread.crawl
     end
   end
   

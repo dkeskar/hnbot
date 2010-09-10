@@ -27,6 +27,7 @@ class Discussion < Crawler
     entries = @doc.search("td.default")
     if entries.empty? and @doc.inner_html =~ /no such user/i
       @avatar.set(:valid => false)
+      raise Avatar::NoSuchUser
     end
     entries.each_with_index do |cmt, ix| 
       text = cmt.search("span.comment/font").inner_html

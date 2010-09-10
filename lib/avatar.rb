@@ -12,6 +12,8 @@ class Avatar
   has_many :comments
   validates_presence_of :name
 
+  class NoSuchUser < StandardError; end
+
   def self.watch(name)
     Avatar.collection.update({:name => name}, 
       {"$inc" => {:nwx => 1}}, :upsert => true
@@ -36,3 +38,4 @@ class Avatar
 
   end
 end
+

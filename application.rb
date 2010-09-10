@@ -93,9 +93,7 @@ get '/hners/:stream_id.:format' do
   end
   case params[:format]
   when :json, 'json'
-    ret = {:success => (!@stream.nil? && !@activity.nil?)}
-    ret[:stream_id] = @stream.sid 
-    ret[:id] = @stream.id 
+    ret = {:stream_id => @stream.sid, :id => @stream.id}
     ret[:status] = @stream.status
     ret[:activity] = @activity || []
     jsonp ret
@@ -115,20 +113,18 @@ end
 
 post %r{/hners([\.](json|html))?$} do |specified, format|
   # create a stream based on config provided
-  @stream = Stream.new(:sid => params[:stream_id])
+  @stream = Stream.new(:sid => params[:stream_id], :status => 'Created')
   @stream.sid ||= Stream.generate_stream_id
   @stream.config = {:user => params[:user], :points => params[:points].to_i}
   @stream.title = params[:title]
-  rc = @stream.save
-  if rc
-    msg = "Stream created and queued for monitoring"
-    status = "Created"
-  else
+  
+  msg = "Stream created and queued for monitoring"
+  if not @stream.save
     msg = "Failed to create stream." 
-    status = "Failed"
+    @stream.status = "Failed"
   end
   if format and format == 'json' 
-    ret = {:success => rc, :status => status, :message => msg}
+    ret = {:status => @stream.status, :message => msg}
     ret[:id] = @stream.id
     ret[:stream_id] = @stream.sid
     jsonp ret
