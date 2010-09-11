@@ -29,9 +29,9 @@ class Stream
     # For comment action, we will include parent comment if any
     
     comments = avatar.comments.where(:pntx.gte => points)
-    comments = comments.sort(:posted_at.desc).limit(25).all
+    comments = comments.sort(:posted_at.desc).limit(100).all
     
-    submits = avatar.postings.sort(:posted_at.desc).limit(20).all
+    submits = avatar.postings.sort(:posted_at.desc).limit(100).all
 
     pmap = {nil => {}}
     pids = comments.map {|c| c.pid }
@@ -43,15 +43,19 @@ class Stream
     parents = Comment.all(:cid => {"$in" => cids})
     parents.each {|c| cmap[c.cid] = c.threadify}
                         
-    combined = interleave_by_posted_at(comments, postings)
+    #combined = interleave_by_posted_at(comments, postings)
+    combined = comments + postings
     combined.each do |item| 
-      object = pmap[item.pid] 
+      if not (object = pmap[item.pid])
+        object = Posting.simulate(item.pid).objectify
+      end
       action = item.actify
       thread = []
       if item.is_a?(Comment)
         item.contexts.push(item.parent_cid).uniq.each do |tcid|
           thread << cmap[tcid]
         end
+        $stderr.puts "thread: #{item.text.slice(0..42)} #{thread}"
         action[:meta].update(:thread => thread)
       end
       retval << {:object => object, :action => action, :actor => actor}
@@ -111,7 +115,7 @@ class Stream
     end
     templ
   end
-		
+  
 	def self.generate_stream_id(len=11)
 		(1..len).map {AZSET[rand(AZLEN)]}.join
 	end

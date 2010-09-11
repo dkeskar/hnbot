@@ -1,4 +1,22 @@
 - if @stream
   %h2= "#{@stream.title || 'Untitled Stream'}"
   - @activity.each do |item|
-    %div= Stream.display(item)
+    - $stderr.puts "====", item.inspect
+    <div class="activity">
+    - if item[:action][:type] == 'comment'
+      %div{:class => "comment"}
+        %span{:class => 'person'}= item[:object][:meta][:person]
+        %a{:href => item[:object][:url]}= item[:object][:title]
+        - if not item[:action][:meta][:thread].blank?
+          - item[:action][:meta][:thread].each do |tc|
+            - next if tc == 'null' or tc == nil
+            %div{:class => "thread"}
+              %span{:class => 'person'}= tc[:person]
+              %span{:class => 'blurb'}= tc[:summary].slice(0..120)
+              %span= "...more" if tc[:summary].size > 120
+
+        %div{:class => 'summary'}= item[:action][:summary]
+    - elsif item[:action][:type] == 'submit'
+      %div{:class => "submit"}
+        %a{:href => item[:action][:url]}= item[:action][:title]
+    </div>

@@ -57,3 +57,12 @@ ul.simple {list-style:none;}
 span.numbers {font-size: 0.8em; width: 5em; text-align: right;;}
 .stats {text-align:center; font-size:small; font-style:italic;}
 .meta {color: 555; font-size: 0.8em; font-style: italic; text-align:right;}
+
+/* Activity */
+.activity {margin: 10px 0; padding: 6px 0;}
+.comment {background: url(/cmt.png) no-repeat 0 0; padding-left: 24px}
+.submit {background: url(/post.png) no-repeat 0 0; padding-left: 24px}
+.summary {font-size: 0.8em; color: #555; 
+  padding: 4px 3px; }
+.thread {padding: 3px; margin: 2px 0; background-color: #edeff4; font-size: 0.75em;}
+.person {font-size: 12px; color: #d962a5}

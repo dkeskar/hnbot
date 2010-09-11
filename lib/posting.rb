@@ -35,9 +35,17 @@ class Posting
   end
 
 
+  def self.simulate(pid)
+    p = Posting.new(:pid => pid, :link => "#{HackerNews::URL}/item?id=#{pid}")
+    p.title = "a posting"
+    p
+  end
+
   def objectify 
     # thumb and summary to come soon
-    { :url => self.link, :title => self.title, :time => self.posted_at.to_s}
+    { :url => self.link, :title => self.title, :time => self.posted_at.to_s, 
+      :meta => {:person => self.name, :points => self.pntx, :comments => self.cmtx}
+    }
   end
 
   def actify
