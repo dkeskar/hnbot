@@ -2,9 +2,21 @@ require 'crawler'
 # parse and process news.yc list of links
 class List < Crawler
 
-  def initialize(url)
-    @base_url = url
+  def initialize(url=nil)
+    @prefix_url = url
     super
+  end
+
+  def user=(avatar)
+    raise "Expect Avatar" if not avatar.is_a?(Avatar)
+    raise "Prefix URL not set" if not @prefix_url
+    @avatar = avatar
+    @base_url = "#{@prefix_url}#{@avatar.name}"
+  end
+
+  def base_url=(url)
+    @avatar = nil
+    @base_url = @prefix_url = url
   end
 
   def process_page
@@ -22,28 +34,15 @@ class List < Crawler
     titles.each_with_index do |hdr, ix| 
       info = subtexts[ix]
 
-      pts = info.at('span').inner_html.split(/\s/).first.to_i
-
-      item_link = info.at("a[@href*='item']")
-      if item_link
-        cmts = item_link.inner_html.split(/\s/).first.to_i 
-        pid = item_link[:href].match(/item\?id=(\w+)/)
-      elsif pt_id = info.at('span')
-        # job posts have no comments. Use span info to get id
-        pid = pt_id[:id].match(/score_(\w+)/)
-      end
-
-      pid = pid[1] if pid and pid.size > 1
-      user = info.at("a[@href*='user']").inner_html
-
-      title = hdr.at('a').inner_html
-      link = hdr.at('a')[:href]
+      link, title = Link.extract_link_title(hdr)
       link = full_url(link)
 
-      tm = info.inner_html.match(/a\>([^\|]+)\s(\||$)/)
-      tm = (tm and tm.size > 1) ? Crawler.time_from_words(tm[1]) : Time.now
+      pts, cmts, pid = Link.extract_meta(info)
+      user = Link.extract_user(info)
+      tm = Link.extract_posted_at(info)
 
-			next if (tm < (Time.now - newer_than))
+      break if tm and newer_than and (Time.now - tm) > newer_than 
+
 			$stderr.puts "P: #{pid} #{title}"
 
       avatar = Avatar.first_or_create(:name => user)
@@ -63,14 +62,5 @@ class List < Crawler
 		more = @doc.search("tr/td.title/a[@href*='/x?fnid']")
 		more.size > 0 ? more.first[:href] : nil
   end
-
-  # FIXME: deprecated
-	def update_bot_bio
-  	self.name = @doc.search("title").inner_html
-  	self.icon_url = @doc.search("link[@rel*='icon']").first[:href]
-  	self.target_rss_url = "#{@base_url}/rss"
-  	self.save
-	end
-
 
 end

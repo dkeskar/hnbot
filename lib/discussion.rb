@@ -86,7 +86,7 @@ class Discussion < Crawler
                  )
       # Track watched users' comment activity for posting 
       Posting.add(:pid => pid, :updated_at => Time.now)
-      Posting.increment({:pid => pid}, :wacx => 1)
+      Posting.increment({:pid => pid}, :wacx => 1)    # relative
 
       # Track response threads
       if not rspfor.empty?

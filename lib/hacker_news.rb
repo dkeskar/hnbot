@@ -33,11 +33,15 @@ class HackerNews < Watchbot
 
   def refresh_watchlist
     thread = Discussion.new(CMT_URL)
+    submit = List.new(SBM_URL)
     Avatar.watched.each do |user|
       begin
         next if not user.valid 
         thread.user = user
         thread.crawl
+
+        submit.user = user
+        submit.crawl
       rescue Avatar::NoSuchUser
         Stream.invalidate(user)
       end

@@ -43,19 +43,19 @@ class Stream
     parents.each {|c| cmap[c.cid] = c.threadify}
                         
     #combined = interleave_by_posted_at(comments, postings)
-    combined = comments + postings
+    combined = comments + submits
     combined.each do |item| 
-      if not (object = pmap[item.pid])
-        object = Posting.simulate(item.pid).objectify
-      end
       action = item.actify
       thread = []
       if item.is_a?(Comment)
+        object = pmap[item.pid]
         item.contexts.push(item.parent_cid).uniq.each do |tcid|
           thread << cmap[tcid]
         end
         $stderr.puts "thread: #{item.text.slice(0..42)} #{thread}"
         action[:meta].update(:thread => thread)
+      elsif item.is_a?(Posting)
+        object = nil
       end
       retval << {:object => object, :action => action, :actor => actor}
     end

@@ -35,10 +35,14 @@ class Posting
 
   def objectify 
     # thumb and summary to come soon
-    self.actify
+    tuple_info
   end
 
   def actify
+    tuple_info.merge(:type => 'submit')
+  end
+
+  def tuple_info
     { :url => self.link, :title => self.title, :time => self.posted_at.to_s, 
       :meta => {:person => self.name, :points => self.pntx, :comments => self.cmtx},
       :uid => self.pid

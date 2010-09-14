@@ -59,7 +59,7 @@ span.numbers {font-size: 0.8em; width: 5em; text-align: right;;}
 .meta {color: 555; font-size: 0.8em; font-style: italic; text-align:right;}
 
 .right {float:right; text-align:right;}
-.small, .small a {text-size: 11px;}
+.small, .small a {font-size: 0.75em;}
 
 /* Activity */
 .activity {margin: 10px 0; padding: 6px 0;}
