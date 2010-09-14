@@ -5,6 +5,9 @@
     <div class="activity">
     - if item[:action][:type] == 'comment'
       %div{:class => "comment"}
+        %div{:class => 'right small'}
+          %a{:href => "http://news.ycombinator.com/item?id=#{item[:object][:uid]}"}
+            = "#{item[:object][:meta][:points]} pts, #{item[:object][:meta][:comments]} cx"
         %span{:class => 'person'}= item[:object][:meta][:person]
         %a{:href => item[:object][:url]}= item[:object][:title]
         - if not item[:action][:meta][:thread].blank?

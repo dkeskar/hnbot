@@ -35,14 +35,14 @@ class Posting
 
   def objectify 
     # thumb and summary to come soon
-    { :url => self.link, :title => self.title, :time => self.posted_at.to_s, 
-      :meta => {:person => self.name, :points => self.pntx, :comments => self.cmtx}
-    }
+    self.actify
   end
 
   def actify
-    { :url => self.link, :title => self.title, 
-      :time => self.posted_at.to_s, :type => 'submit'}
+    { :url => self.link, :title => self.title, :time => self.posted_at.to_s, 
+      :meta => {:person => self.name, :points => self.pntx, :comments => self.cmtx},
+      :uid => self.pid
+    }
   end
 
   def self.unfetched
