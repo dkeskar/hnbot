@@ -12,8 +12,8 @@ class HackerNews < Watchbot
 		$stderr.puts "Begin HN.refresh #{Time.now}"
 		bot = HackerNews.first_or_create(:target_url => URL)
 		bot.record(:begin)
-		bot.refresh_postings
     bot.refresh_watchlist
+		bot.fetch_postings
 		bot.record(:end)
 	rescue => e
 		$stderr.puts "#{e.class} #{e.message}", e.backtrace
@@ -43,9 +43,9 @@ class HackerNews < Watchbot
     end
   end
   
-	def refresh_postings
-    list = List.new(URL)
-    list.crawl
+  # Fetch posts on which watchlist avatars have commented. 
+	def fetch_postings
+    pids = Posting.all(:link => nil)
 	end
 
 end
