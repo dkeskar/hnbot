@@ -3,7 +3,7 @@ require 'hpricot'
 
 # General utilities and functions for crawling and parsing 
 class Crawler 
-  attr_accessor :max_pages, :base_url, :newer_than
+  attr_accessor :max_pages, :prefix_url, :base_url, :newer_than
   attr_accessor :doc
 
   def initialize(min_wait=23, var_wait=42, max_pages=10)
@@ -48,7 +48,7 @@ class Crawler
   def full_url(link)
     return link if link.nil? or link =~ /^http/
     link = "/#{link}" if link !~ /^\//
-    "#{@base_url}#{link}"
+    "#{@prefix_url || @base_url}#{link}"
   end
 
   def crawl(url=nil, page=1)

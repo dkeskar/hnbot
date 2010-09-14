@@ -10,6 +10,7 @@ class Posting
   key :pntx, Integer
   key :cmtx, Integer
   key :posted_at, Time
+  key :valid, Boolean, :default => true
 
   # TODO: Excerpt the posting by crawling and parsing the link. 
   key :summary, String    # summary excerpted
@@ -17,28 +18,17 @@ class Posting
   key :pinged, Boolean, :default => false
   
   belongs_to :avatar
-
-  TEMPLATE = <<-END
-  {{user}} submitted <a href="{{link}}><{{title}}</a> {{time}}<br/>
-  {{cmtx}} comments, {{pntx} points.
-  END
-  TEMPLATE.freeze
   
+  class NoSuchItem < StandardError; end 
+
   def self.add(info={})
     set_data = {}
     # posted at will have larger error drift if we set it all the time. 
     # Better if set first time and never changed later. 
-    Posting.collection.update({:link => info[:link]}, 
+    Posting.collection.update({:pid => info[:pid]}, 
       {"$set" => info}, 
       :upsert => true
     )
-  end
-
-
-  def self.simulate(pid)
-    p = Posting.new(:pid => pid, :link => "#{HackerNews::URL}/item?id=#{pid}")
-    p.title = "a posting"
-    p
   end
 
   def objectify 
@@ -53,27 +43,8 @@ class Posting
       :time => self.posted_at.to_s, :type => 'submit'}
   end
 
-  def info
-    ret = {}
-    [:link, :title, :pntx, :cmtx].each do |attr|
-      ret[attr] = self[attr]
-    end
-    ret[:user] = self.name
-    ret[:time] = self.posted_at   # FIXME: relative time please
-    ret[:template] = self.class.to_s.underscore
-    ret 
-  end
-
-  def feed_data
-    ret = {:event  => 'submitted'}
-    ret[:person] = self.name
-    ret[:object] = {
-      :link => self.link, :title => self.title,
-      :thumb => 'http://ycombinator.com/images/y18.gif',
-      :time => self.posted_at
-    }
-    ret[:stats] = {:points => self.pntx, :comment => self.cmtx}
-    ret
+  def self.unfetched
+    Posting.all(:link => nil)
   end
 
 end

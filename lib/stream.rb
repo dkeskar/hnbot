@@ -11,7 +11,6 @@ class Stream
   key :sid, String    # mavenn stream id
   key :title, String
   key :config, Hash
-  key :_type, String
   key :cache, Hash    # cache config in effect
   key :status, String, :default => "Active"
 
@@ -83,37 +82,9 @@ class Stream
     result
   end
 
-  def activity
-    # only support user comment and submission watch currently 
-
-    avatar = Avatar.where(:name => self.config[:user]).first
-    pts = self.config[:points] || 1
-
-    # Items are already entered in reverse chronological order. 
-    # Getting them back in natural order is fine.
-    comments = avatar.comments.where(:pntx.gte => pts).sort(:$natural).paginate
-    postings = avatar.postings.sort(:$natural).limit(20).all
-    
-    # interleave later
-    feed = []
-    
-    (comments + postings).each do |item|
-      feed << item.info
-    end
-    feed
-  end
-
   def self.preview
     av = Avatar.first(:name => %w(pg patio11 tptacek).shuffle.shift)
     Stream.new.tuples(av)
-  end
-  
-  def self.display(item)
-    templ = item[:comment] ? Comment::TEMPLATE : Posting::TEMPLATE
-    item.keys.each do |field|
-      templ = templ.gsub(/\{\{#{field}\}\}/, item[field].to_s)
-    end
-    templ
   end
   
 	def self.generate_stream_id(len=11)

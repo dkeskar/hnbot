@@ -45,7 +45,16 @@ class HackerNews < Watchbot
   
   # Fetch posts on which watchlist avatars have commented. 
 	def fetch_postings
-    pids = Posting.all(:link => nil)
+    link = Link.new(URL)
+    Posting.unfetched.each do |posting|
+      begin
+        next if not posting.valid
+        link.item = posting
+        link.crawl
+      rescue Posting::NoSuchItem
+        # soldier on 
+      end
+    end
 	end
 
 end
