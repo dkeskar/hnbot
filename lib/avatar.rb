@@ -10,7 +10,6 @@ class Avatar
     
   has_many :postings
   has_many :comments
-  validates_presence_of :name
 
   class NoSuchUser < StandardError; end
 
@@ -28,8 +27,17 @@ class Avatar
     Avatar.where(:nwx.gt => 0).sort(:$name.asc).all
   end
 
+  def self.num_watch
+    # default keys may not be stored, since we add watch as an upsert
+    Avatar.count({:nwx.gt => 0, :valid.ne => false})
+  end
+
   def unwatch(num)
     Avatar.decrement(:nwx => -1*num)
+  end
+
+  def invalid!
+    self.set(:valid => false)
   end
 
 end

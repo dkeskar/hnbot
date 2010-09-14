@@ -26,6 +26,7 @@ class HackerNews < Watchbot
 		{ 
 			:posts => Posting.count, 
 			:avatars => Avatar.count,
+      :watched => Avatar.num_watch,
 			:refresh => status
 		}
 	end
@@ -51,7 +52,7 @@ class HackerNews < Watchbot
         next if not posting.valid
         link.item = posting
         link.crawl
-      rescue Posting::NoSuchItem
+      rescue Posting::NoSuchItem, Posting::Dead
         # soldier on 
       end
     end

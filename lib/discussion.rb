@@ -26,7 +26,7 @@ class Discussion < Crawler
 
     entries = @doc.search("td.default")
     if entries.empty? and @doc.inner_html =~ /no such user/i
-      @avatar.set(:valid => false)
+      @avatar.invalid!
       raise Avatar::NoSuchUser
     end
     entries.each_with_index do |cmt, ix| 
@@ -84,6 +84,10 @@ class Discussion < Crawler
                   :pntx => points,
                   :posted_at => tm
                  )
+      # Track watched users' comment activity for posting 
+      Posting.add(:pid => pid, :updated_at => Time.now)
+      Posting.increment({:pid => pid}, :wacx => 1)
+
       # Track response threads
       if not rspfor.empty?
         context = rspfor.last[:cid]
@@ -106,6 +110,8 @@ class Discussion < Crawler
       rspfor.push({:level => lvl, :cid => cid})
       $stderr.puts rspfor.inspect
     end
+    # since we only fetch one page at a time, wait here
+    sleep wait_interval
     count
   end
 

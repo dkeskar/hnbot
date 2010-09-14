@@ -9,11 +9,11 @@
     %input{:type => 'submit', :value => 'Watch'}
   <br/>
 
-%h2 Top 10x10
-%p These are the top 10 items by points in the last 10 hours. 
+%h2 Watch Activity
+%p These are the items being discussed by watched users.
 
 %ul.simple
-  - @top10.each do |item|
+  - @top.each do |item|
     %li
       %div.meta{:style => 'float:right;'}
         %a{:href => "http://news.ycombinator.com/item?id=#{item.pid}"}= "#{item.pntx} pt, #{item.cmtx} cx"
@@ -22,7 +22,7 @@
 
 %div.stats
   - if @stats
-    %p= "Postings: #{@stats[:posts]} Avatars: #{@stats[:avatars]}"
+    %p= "Postings: #{@stats[:posts]}, Avatars: #{@stats[:avatars]}, Watched: #{@stats[:watched]}"
     %p= @stats[:refresh]
   - else 
     %p No stats.

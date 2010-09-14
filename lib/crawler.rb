@@ -14,7 +14,7 @@ class Crawler
   end
 
   def wait_interval
-    @min_wait + rand*@var_wait
+    10 #@min_wait + rand*@var_wait
   end
 
   # Fetch URI, deals with redirects
@@ -62,7 +62,7 @@ class Crawler
     count = process_page
 
     if count > 0 and page < @max_pages and (more = url_next)
-      sleep 10 #wait_interval
+      sleep wait_interval
       crawl(more, page+1)
     end
   end

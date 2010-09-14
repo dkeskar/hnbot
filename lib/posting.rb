@@ -11,6 +11,7 @@ class Posting
   key :cmtx, Integer
   key :posted_at, Time
   key :valid, Boolean, :default => true
+  key :wacx, Integer, :default => 0     # watch activity
 
   # TODO: Excerpt the posting by crawling and parsing the link. 
   key :summary, String    # summary excerpted
@@ -20,6 +21,7 @@ class Posting
   belongs_to :avatar
   
   class NoSuchItem < StandardError; end 
+  class Dead < StandardError; end
 
   def self.add(info={})
     set_data = {}
@@ -44,7 +46,18 @@ class Posting
   end
 
   def self.unfetched
-    Posting.all(:link => nil)
+    Posting.all(:link => nil, :valid.ne => false)
+  end
+
+  # Top posting by watched user activity in last 24 hours
+  def self.top
+    Posting.where(:valid.ne => false,
+      :updated_at.gte => (Time.now - 24.hours)
+    ).sort(:wacx.desc).limit(21).all
+  end
+
+  def invalid!
+    self.set(:valid => false)
   end
 
 end

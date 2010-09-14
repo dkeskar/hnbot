@@ -41,9 +41,7 @@ end
 
 
 get '/' do
-  @top10 = Posting.where(
-    :posted_at.gte => (Time.now - 10.hours)
-  ).sort(:pntx.desc).limit(10).all
+  @top = Posting.top
   @stats = HackerNews.stats  
   haml :hn  
 end

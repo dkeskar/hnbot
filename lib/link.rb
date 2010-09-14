@@ -26,34 +26,39 @@ class Link < Crawler
     meta_info = @doc.search("tr/td.subtext")
 
     if link_info.empty? and @doc.inner_html =~ /no such item/i
-      @posting.set(:valid => false)
+      @posting.invalid!
       raise Posting::NoSuchItem, "pid=#{@posting.pid}"
     end
 
     link, title = Link.extract_link_title(link_info.first)
     link = full_url(link)
-    info = meta_info.first
-    pts, cmts, pid = Link.extract_meta(info)
-    user = Link.extract_user(info)
-    tm = Link.extract_posted_at(info)
-
+    link = self.base_url if link.nil? 
+    if !meta_info.empty? and (info = meta_info.first)
+      pts, cmts, pid = Link.extract_meta(info)
+      user = Link.extract_user(info)
+      tm = Link.extract_posted_at(info)
+      raise "PID mismatch" if !pid.nil? and pid != @posting.pid
+    end
     $stderr.puts "P: #{pid} #{title}"
 
     avatar = Avatar.first_or_create(:name => user)
-    posting = Posting.add(
+    Posting.add(
       :avatar_id => avatar.id, :name => avatar.name,
       :link => link, :title => title,
       :pntx => pts, :cmtx => cmts, 
       :posted_at => tm,
-      :pid => pid
+      :pid => @posting.pid
     )
+    sleep wait_interval
     1 
   end
 
   def self.extract_link_title(info)
     raise ArgumentError, "Expect Hpricot::Elem" if !info.is_a?(Hpricot::Elem)
-    link = info.at('a')[:href]
-    title = info.at('a').inner_html
+    anchor = info.at('a')
+    return [nil, info.inner_html] if not anchor
+    link = anchor[:href]
+    title = anchor.inner_html
     [link, title]
   end
 
@@ -63,18 +68,20 @@ class Link < Crawler
   end
  
   def self.extract_user(info)
-    info.at("a[@href*='user']").inner_html
+    uin = info.at("a[@href*='user']")
+    uin ? uin.inner_html : nil
   end
 
   def self.extract_meta(info)
-    pts = info.at('span').inner_html.split(/\s/).first.to_i
+    span = info.at("span")
+    pts = span.inner_html.split(/\s/).first.to_i if span
     item_link = info.at("a[@href*='item']")
     if item_link
       cmts = item_link.inner_html.split(/\s/).first.to_i 
       pid = item_link[:href].match(/item\?id=(\w+)/)
-    elsif pt_id = info.at('span')
+    elsif span
       # job posts have no comments. Use span info to get id
-      pid = pt_id[:id].match(/score_(\w+)/)
+      pid = span[:id].match(/score_(\w+)/)
     end
 
     pid = pid[1] if pid and pid.size > 1
