@@ -106,6 +106,10 @@ end
   #else
 
 post %r{/tests([\.](json|html))?$} do |specified, format|
+  STDERR.puts "Parameters: #{params.inspect}"
+  STDERR.puts "Body: #{request.body.string}"
+  STDERR.puts "Headers: #{request_headers.inspect}"
+  STDERR.puts "Content-type: #{request.content_type}"
   ret = {:ok => true, :params => params}
   jsonp ret
 end
@@ -128,10 +132,10 @@ post %r{/hners([\.](json|html))?$} do |specified, format|
     ret[:stream_id] = @stream.sid
     jsonp ret
   else
-    if rc
-      redirect "/hners/#{@stream.sid}.html"
-    else 
+    if @stream.status == 'Failed'
       haml :configure
+    else 
+      redirect "/hners/#{@stream.sid}.html"
     end
   end
 end
