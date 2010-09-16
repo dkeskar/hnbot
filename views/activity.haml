@@ -15,8 +15,7 @@
             - next if tc == 'null' or tc == nil
             %div{:class => "thread"}
               %span{:class => 'person'}= tc[:person]
-              %span{:class => 'blurb'}= tc[:summary].slice(0..120)
-              %span= "...more" if tc[:summary].size > 120
+              %span{:class => 'blurb'}= tc[:summary]
 
         %div{:class => 'summary'}= item[:action][:summary]
     - elsif item[:action][:type] == 'submit'

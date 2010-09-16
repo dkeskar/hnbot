@@ -77,16 +77,18 @@ class Discussion < Crawler
 
       # Add the comment 
       count += 1
-      Comment.add(:avatar_id => avid, :name => cmtr,
+      newcmt = Comment.add(:avatar_id => avid, :name => cmtr,
                   :cid => cid, :pid => pid, :nrsp => 0,
                   :parent_cid => parent, 
                   :text => text,
                   :pntx => points,
                   :posted_at => tm
                  )
-      # Track watched users' comment activity for posting 
-      Posting.add(:pid => pid, :updated_at => Time.now)
-      Posting.increment({:pid => pid}, :wacx => 1)    # relative
+      if newcmt and avid 
+        # Track watched users' comment activity for posting 
+        Posting.add(:pid => pid, :updated_at => Time.now)
+        Posting.increment({:pid => pid}, :wacx => 1)    # relative
+      end
 
       # Track response threads
       if not rspfor.empty?

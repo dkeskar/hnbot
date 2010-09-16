@@ -9,16 +9,19 @@
     %input{:type => 'submit', :value => 'Watch'}
   <br/>
 
-%h2 Watch Activity
+%h2 Watch Articles
 %p These are the items being discussed by watched users.
 
+- ycit = 'http://news.ycombinator.com/item?id='
 %ul.simple
   - @top.each do |item|
     %li
-      %div.meta{:style => 'float:right;'}
-        %a{:href => "http://news.ycombinator.com/item?id=#{item.pid}"}= "#{item.pntx} pt, #{item.cmtx} cx"
-      %div
-        %a{:href => item.link}= item.title 
+      - if !item.title.blank? and !item.link.blank?
+        %div.meta{:style => 'float:right;'}
+          %a{:href => "#{ycit}#{item.pid}"}= "#{item.pntx} pt, #{item.cmtx} cx"
+        %div
+          %a{:href => "/watch/activity/#{item.pid}"}= "[#{item.wacx}]"
+          %a{:href => item.link}= item.title 
 
 %div.stats
   - if @stats

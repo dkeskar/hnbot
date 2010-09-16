@@ -23,12 +23,21 @@ class Comment
   
   def self.add(info={})
     set_data = {}
-    # FIXME: posted at will have larger error drift if we set it all the time. 
-    # Better if set first time and never changed later. 
+    added = true
+    if Comment.exists?(:cid => info[:cid]) 
+      # posted at will have larger error drift if we set it all the time. 
+      # We set first time and never changed later. 
+      [:posted_at, :created_at].each {|k| info.delete(k) }
+      added = false
+    else
+      info[:created_at] = Time.now
+    end
+    info[:upated_at] = Time.now
     Comment.collection.update({:cid => info[:cid]}, 
       {"$set" => info}, 
       :upsert => true
     )
+    added
   end
 
   def self.addToSet(cid, setname, element)
@@ -36,6 +45,10 @@ class Comment
       {:cid => cid, setname => {"$ne" => element}}, 
       {"$push" => {setname => element}}
     )
+  end
+
+  def self.watched_for(pid)
+    Comment.where(:pid => pid, :avatar_id.ne => nil).sort(:posted_at.asc).all
   end
 
   def actify

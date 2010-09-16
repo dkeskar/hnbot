@@ -46,6 +46,12 @@ get '/' do
   haml :hn  
 end
 
+get '/watch/activity/:pid' do 
+  @posting = Posting.first(:pid => params[:pid])
+  @comments = Comment.watched_for(params[:pid])
+  haml :comments
+end
+
 get %r{/watch(/([\w]+))?} do 
 	if (opt = params[:captures]) and opt.is_a?(Array) and opt.size == 2
 		@highlight = opt.last

@@ -25,12 +25,21 @@ class Posting
 
   def self.add(info={})
     set_data = {}
-    # posted at will have larger error drift if we set it all the time. 
-    # Better if set first time and never changed later. 
+    added = true
+    if Posting.exists?(:pid => info[:pid])
+      # posted at will have larger error drift if we set it all the time. 
+      # Better if set first time and never changed later. 
+      [:posted_at, :created_at].each {|k| info.delete(k) }
+      added = false
+    else
+      info[:created_at] = Time.now
+    end
+    info[:updated_at] = Time.now
     Posting.collection.update({:pid => info[:pid]}, 
       {"$set" => info}, 
       :upsert => true
     )
+    added
   end
 
   def objectify 
