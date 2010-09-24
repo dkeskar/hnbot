@@ -39,6 +39,8 @@ helpers do
   end
 end
 
+class UnprocessableEntity < Exception; def code; 422; end; end
+class Forbidden < Exception; def code; 403; end; end
 
 get '/' do
   @top = Posting.top
@@ -149,6 +151,16 @@ put '/hners/:sid' do
   "put #{params[:sid]}"
 end
 
-delete '/hners/:sid' do 
-  "delete #{params[:sid]}"
+delete '/hners/:sid.:format' do
+  @stream = Stream.first(:sid => params[:sid])
+  res = @stream ? "OK" : "Failed"
+  case params[:format] 
+  when 'html'
+    body "DELETE #{res} #{params[:sid]}"
+  when 'json'
+    ret = {:success => !@stream.nil?, :stream_id => params[:sid]}
+    rsp = jsonp(ret)
+  end
+  error 422, rsp if not @stream 
+  @stream.destroy
 end
