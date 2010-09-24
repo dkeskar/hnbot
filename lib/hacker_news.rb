@@ -7,6 +7,8 @@ class HackerNews < Watchbot
 
   MAX_PAGES = 5
 	MAX_USER_PAGES = 1
+
+  key :last_post, Time
 	
 	def self.refresh
 		$stderr.puts "Begin HN.refresh #{Time.now}"
@@ -62,4 +64,23 @@ class HackerNews < Watchbot
     end
 	end
 
+  def post_activity
+    before = self.last_post
+    self.set(:last_post => Time.now)
+    Stream.all.each do |stream|
+      activity = stream.tuples(:since => before)
+      json = activity.to_json
+
+      uri = "#{SiteConfig.mavenn}/2010-10-17/streams/#{stream.sid}/activity"
+      uri = URI.parse(uri)
+      http = Net::HTTP.new(uri.host, uri.port)
+
+      req = Net::HTTP::Post.new(uri.request_uri)
+      req.set_form_data(:activity => activity)
+      req.basic_auth(SiteConfig.apid, SiteConfig.token)
+      rsp = http.request(req)
+
+      sleep 2
+    end
+  end
 end

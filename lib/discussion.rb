@@ -102,11 +102,11 @@ class Discussion < Crawler
           :text => text,
           :pntx => points
         }
-        Comment.addToSet(context, :responses, response)
+        Comment.add_to_set({:cid => context}, {:responses => response})
         # To get an accurate context, we need to crawl up the 
         # parent link until we reach the article item or a top-level 
         # comment. 
-        Comment.addToSet(cid, :contexts, context)
+        Comment.add_to_set({:cid => cid}, {:contexts => context})
       end
 
       rspfor.push({:level => lvl, :cid => cid})

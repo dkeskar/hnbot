@@ -32,19 +32,12 @@ class Comment
     else
       info[:created_at] = Time.now
     end
-    info[:upated_at] = Time.now
+    info[:updated_at] = Time.now
     Comment.collection.update({:cid => info[:cid]}, 
       {"$set" => info}, 
       :upsert => true
     )
     added
-  end
-
-  def self.addToSet(cid, setname, element)
-    Comment.collection.update(
-      {:cid => cid, setname => {"$ne" => element}}, 
-      {"$push" => {setname => element}}
-    )
   end
 
   def self.watched_for(pid)

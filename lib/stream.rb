@@ -15,10 +15,11 @@ class Stream
   key :status, String, :default => "Active"
 
   # activity as [ {actor, object, action} ]
-  def tuples(avatar=nil)
+  # options can be :avatar, or :since
+  def tuples(options={})
     retval = []
 
-    avatar ||= Avatar.first(:name => self.config[:user])
+    avatar = options[:avatar] || Avatar.first(:name => self.config[:user])
     points = self.config[:points] || 1
     actor = {:person => avatar.name}
 
@@ -27,10 +28,12 @@ class Stream
     # We will NOT aggregate multiple comments for a given object. 
     # For comment action, we will include parent comment if any
     
-    comments = avatar.comments.where(:pntx.gte => points)
+    newer = {}
+    newer[:created_at.gte] = options[:since] if options[:since]
+    comments = avatar.comments.where(:pntx.gte => points).where(newer)
     comments = comments.sort(:posted_at.desc).limit(100).all
     
-    submits = avatar.postings.sort(:posted_at.desc).limit(100).all
+    submits = avatar.postings.where(newer).sort(:posted_at.desc).limit(100).all
 
     pmap = {nil => {}}
     pids = comments.map {|c| c.pid }
