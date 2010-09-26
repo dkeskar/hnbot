@@ -14,7 +14,7 @@ class Crawler
   end
 
   def wait_interval
-    10 #@min_wait + rand*@var_wait
+    @min_wait + rand*@var_wait + rand*@var_wait
   end
 
   # Fetch URI, deals with redirects
