@@ -2,6 +2,7 @@ require 'watchbot'
 
 class HackerNews < Watchbot
   URL = 'http://news.ycombinator.com'
+  # robots.txt for news.yc disallows both /threads and /submitted
 	CMT_URL = "#{URL}/threads?id="
 	SBM_URL = "#{URL}/submitted?id="
 
