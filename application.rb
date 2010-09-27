@@ -2,7 +2,7 @@ require 'rubygems'
 require 'sinatra'
 require 'haml'
 
-require 'environment'
+require 'config/environment'
 
 configure(:development) do |c|
   require 'sinatra/reloader'
@@ -39,15 +39,14 @@ helpers do
   end
 end
 
-class UnprocessableEntity < Exception; def code; 422; end; end
-class Forbidden < Exception; def code; 403; end; end
-
+# Site Root - Top postings commented by tracked users
 get '/' do
   @top = Posting.top
-  @stats = HackerNews.stats  
+  @stats = HNBot.stats  
   haml :hn  
 end
 
+# Comments by watched users for a given posting
 get '/watch/activity/:pid' do 
   @posting = Posting.first(:pid => params[:pid])
   @comments = Comment.watched_for(params[:pid])
@@ -63,6 +62,7 @@ get %r{/watch(/([\w]+))?} do
 	haml :watch
 end
 
+# Site interface to start watching some user
 post '/watch' do 
 	@watch = Avatar.first_or_new(:name => params[:user])
   inc = params[:unwatch] ? -1 : 1
@@ -70,12 +70,16 @@ post '/watch' do
 	redirect "/hn/watch/#{@watch.id}"
 end
 
+####################################################################
+# 
+# Stream API 
+# 
+# UI for viewing stream types and configuring a new stream instance
 get '/hners/new' do 
-  # UI for viewing stream types and configuring a new stream instance
   haml :configure
 end
 
-# list of streams, possibly filtered by user
+# List streams, possibly filtered by user
 get %r{/hners([\.](json|html))?$} do |specified, format|
   criteria = params[:user] ? {'config.user' => params[:user]} : {}
   @streams = Stream.all(criteria)
@@ -85,7 +89,7 @@ get %r{/hners([\.](json|html))?$} do |specified, format|
   end
 end
 
-# activity for a specific stream
+# Activity for a specific stream
 get '/hners/:stream_id.:format' do 
   # get activity for a stream
   if params[:stream_id] == 'default' or params[:stream_id] == 'preview'
@@ -107,10 +111,7 @@ get '/hners/:stream_id.:format' do
   end
 end
 
-	#if (opt = params[:captures]) and opt.is_a?(Array) and opt.size > 2
-    #@stream = Stream.where(:sid => opt[1]).first
-  #else
-
+# Test Only -- Parameter/Header/Body/Content 
 post %r{/tests([\.](json|html))?$} do |specified, format|
   STDERR.puts "Parameters: #{params.inspect}"
   STDERR.puts "Body: #{request.body.string}"
@@ -120,6 +121,8 @@ post %r{/tests([\.](json|html))?$} do |specified, format|
   jsonp ret
 end
 
+# Create a new stream
+# FIXME: Authenticate that the request came from mavenn
 post %r{/hners([\.](json|html))?$} do |specified, format|
   # create a stream based on config provided
   @stream = Stream.new(:sid => params[:stream_id], :status => 'Created')
@@ -146,11 +149,14 @@ post %r{/hners([\.](json|html))?$} do |specified, format|
   end
 end
 
-# update config parameters for an existing stream
+# Update config parameters for an existing stream
+# FIXME: Authenticate that the request came from mavenn
 put '/hners/:sid' do 
   "put #{params[:sid]}"
 end
 
+# Delete a previously created stream if it exists
+# FIXME: Authenticate that the request came from mavenn
 delete '/hners/:sid.:format' do
   @stream = Stream.first(:sid => params[:sid])
   res = @stream ? "OK" : "Failed"

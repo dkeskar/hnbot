@@ -1,5 +1,5 @@
 require 'watchbot'
-require 'private_config'
+require 'daemons'
 
 # HNBot lets you track comments made by people you follow via mavenn, 
 #
@@ -16,17 +16,25 @@ class HNBot < Watchbot
   # Daemonized fetch of /newcomments storing Comments and stub Postings
   # Fetches full Postings info less often, say every 10 min.
 
-  def initialize(args)
-    first_or_create(:target_url => NEW_CMTS)
+  def initialize
+    self.load    
   end
 
+	def self.stats
+		{ 
+			:posts => Posting.count, 
+			:avatars => Avatar.count,
+      :watched => Avatar.watched(:count),
+		}
+	end
+
   # Fetch newest comments (first page only)
-  def fetch_comments
+  def self.fetch_comments
     CommentList.new(NEW_CMTS).crawl
   end
 
   # Fetch posts on which watchlist avatars have commented. 
-	def fetch_postings
+	def self.fetch_postings
     link = Link.new(BASE_URL)
     Posting.unfetched.each do |posting|
       begin

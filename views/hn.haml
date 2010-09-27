@@ -26,7 +26,6 @@
 %div.stats
   - if @stats
     %p= "Postings: #{@stats[:posts]}, Avatars: #{@stats[:avatars]}, Watched: #{@stats[:watched]}"
-    %p= @stats[:refresh]
   - else 
     %p No stats.
 			

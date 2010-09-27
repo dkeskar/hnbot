@@ -6,7 +6,8 @@ class Crawler
   attr_accessor :max_pages, :prefix_url, :base_url, :newer_than
   attr_accessor :doc
 
-  def initialize(min_wait=23, var_wait=42, max_pages=10)
+  def initialize(base_url, min_wait=23, var_wait=42, max_pages=10)
+    @base_url = base_url
     @min_wait = min_wait
     @var_wait = var_wait
     @max_pages = max_pages

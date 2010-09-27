@@ -31,6 +31,7 @@ class Posting
       # Better if set first time and never changed later. 
       [:posted_at, :created_at].each {|k| info.delete(k) }
       added = false
+      return added if info.keys.size == 1 
     else
       info[:created_at] = Time.now
     end
@@ -40,6 +41,10 @@ class Posting
       :upsert => true
     )
     added
+  end
+
+  def self.bump(pid) 
+    Posting.increment({:pid => pid}, :wacx => 1)
   end
 
   def objectify 
@@ -64,6 +69,8 @@ class Posting
 
   # Top posting by watched user activity in last 24 hours
   def self.top
+    # FIXME: Periodic map reduce to sort and gather by num watched avatar comments 
+    #
     Posting.where(:valid.ne => false,
       :updated_at.gte => (Time.now - 24.hours)
     ).sort(:wacx.desc).limit(21).all
