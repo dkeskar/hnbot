@@ -2,14 +2,14 @@ load 'deploy' if respond_to?(:namespace) # cap2 differentiator
 
 default_run_options[:pty] = true
 
-set :domain, "nyx.memamsa.com"
-set :application, "watchbots"
+set :domain, "watch.deploy.example.com"
+set :application, "hnbot"
 set :user, "app"
 
 set :scm, :git
 set :deploy_via, :remote_cache
 set :deploy_to, "/home/#{user}/#{application}"
-set :repository,  "git@track.memamsa.net:watchbots.git"
+set :repository,  "git@github.com:dkeskar/hnbot.git"
 set :branch, "master"
 set :git_enable_submodules, 1
 set :scm_verbose, true
@@ -36,7 +36,7 @@ namespace :deploy do
     run "whenever  -f #{current_path}/config/schedule.rb --set '#{varstr}' --update-crontab #{application}"  
   end
 
-  task :private_info, :foles => :app do 
+  task :private_info, :roles => :app do 
     conf = File.read("config/private.yml")
     put conf, "#{current_path}/config/app_config.yml"
   end
