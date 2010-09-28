@@ -18,7 +18,7 @@ set :use_sudo, false
 server domain, :app, :web, :db
 
 after "deploy:symlink", "deploy:whenever"
-after "deploy:update_code", "deploy:private_info"
+after "deploy:symlink", "deploy:private_info"
 
 namespace :deploy do
   task :start do ; end

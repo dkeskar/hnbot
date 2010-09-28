@@ -26,27 +26,33 @@ class HNBot
   # Fetch newest comments (first page only)
   def self.fetch_comments
     last_fetch = Setting.getval(:method) || Time.now - 1.day
+    Setting.setval(:method, (tm = Time.now))
+    STDERR.puts("fetch_comments: begin #{tm}")
     sleep 42*rand                     # create some variability
-    Setting.setval(:method, Time.now)
     CommentList.new(NEW_CMTS).crawl   # only gets one page
   end
 
   # Fetch posts on which watchlist avatars have commented. 
 	def self.fetch_postings
+    count = 0
     last_fetch = Setting.getval(:method) || Time.now - 1.day
-    fetching = Setting.getval(:fetch_postings_underway)
-    return false if fetching
+    if fetching = Setting.getval(:fetch_postings_underway)
+      STDERR.puts("fetch_posting: underway") 
+      return false 
+    end
 
-    Setting.setval(:fetch_postings_underway, true)
     Setting.setval(:method, (tm = Time.now))
+    STDERR.puts("fetch_postings: begin: #{tm}")
     sleep 10*rand
 
     link = Link.new(BASE_URL)
     Posting.unfetched.each do |posting|
       begin
+        Setting.setval(:fetch_postings_underway, true)
         next if not posting.valid
         link.item = posting
         link.crawl
+        count += 1
       rescue Posting::NoSuchItem, Posting::Dead
         # soldier on 
       end
@@ -55,12 +61,15 @@ class HNBot
   ensure 
     Setting.setval("fetch_postings_seconds", tm)
     Setting.setval(:fetch_postings_underway, false)
+    STDERR.puts("fetch_postings: did #{count} in #{tm || 0} sec")
 	end
 
   # Post latest activity to mavenn via API
   def self.post_activity
     before = Setting.getval(:method) || Time.now - 1.day
     Setting.setval(:method, Time.now)
+    STDERR.puts("post_activity: stubbed out") 
+    return false
 
     Stream.all.each do |stream|
       activity = stream.tuples(:since => before)
