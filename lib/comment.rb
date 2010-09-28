@@ -46,7 +46,7 @@ class Comment
 
   def actify
     info = {:type => 'comment', :time => self.posted_at.to_s, :uid => self.cid}
-    info[:url] = "#{HackerNews::URL}/item?id=#{self.cid}"
+    info[:url] = "#{HNBot::BASE_URL}/item?id=#{self.cid}"
     info[:summary] = self.text
     info[:meta] = {:points => self.pntx, :responses => self.nrsp}
     info
