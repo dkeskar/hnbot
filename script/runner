@@ -27,7 +27,7 @@ ARGV.delete(code_or_file)
 
 ENV["APP_ENV"] = options[:environment]
 APP_ENV.replace(options[:environment]) if defined?(APP_ENV)
-require File.dirname(__FILE__) + '/../environment'
+require File.dirname(__FILE__) + '/../config/environment'
 
 begin
   if code_or_file.nil?
