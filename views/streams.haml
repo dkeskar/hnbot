@@ -1,0 +1,12 @@
+- if @streams
+  %h2 Instantiated Streams
+  - @streams.each do |stream|
+    %div{:style => 'margin: 10px 0'}
+      %strong 
+        %a{:href => "/hners/#{stream.sid}.html"}= stream.title || "Untitled"
+      %div= stream.config.inspect
+
+  - if @streams.blank? 
+    %p <i>No streams</i>
+
+

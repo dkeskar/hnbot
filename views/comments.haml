@@ -1,0 +1,13 @@
+%h2 Watch Activity for Article
+
+- ycit = 'http://news.ycombinator.com/item?id='
+
+%div.meta{:style => 'float:right;'}
+  %a{:href => "#{ycit}#{@posting.pid}"}= "#{@posting.pntx} pt, #{@posting.cmtx} cx"
+%div{:style => "font-size: 1.25em; padding: 10px 0;"}
+  %a{:href => @posting.link}= @posting.title 
+
+- @comments.each do |cmt|
+  %div{:class => 'comment'}
+    %span{:class => 'person'}= cmt.name
+    %span{:class => 'summary'}= cmt.text

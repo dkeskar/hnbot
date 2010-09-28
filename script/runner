@@ -1,0 +1,41 @@
+#! /usr/bin/env ruby
+require 'optparse'
+
+code_or_file = nil
+options = { :environment => (ENV['APP_ENV'] || "development").dup }
+
+ARGV.clone.options do |opts|
+  script_name = File.basename($0)
+  opts.banner = "Usage: #{$0} [options] ('Some.ruby(code)' or a filename)"
+
+  opts.separator ""
+
+  opts.on("-e", "--environment=name", String,
+    "Specifies the environment (test/development/production).",
+    "Default: development") { |v| options[:environment] = v }
+
+  opts.separator ""
+
+  opts.on("-h", "--help", "Show this help message.") do 
+    $stderr.puts opts; exit
+  end
+  
+  opts.order! { |o| code_or_file ||= o } rescue retry
+end
+
+ARGV.delete(code_or_file)
+
+ENV["APP_ENV"] = options[:environment]
+APP_ENV.replace(options[:environment]) if defined?(APP_ENV)
+require File.dirname(__FILE__) + '/../config/environment'
+
+begin
+  if code_or_file.nil?
+    $stderr.puts "Run '#{$0} -h' for help."
+    exit 1
+  elsif File.exist?(code_or_file)
+    eval(File.read(code_or_file), nil, code_or_file)
+  else
+    eval(code_or_file)
+  end
+end

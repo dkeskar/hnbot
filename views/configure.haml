@@ -1,0 +1,19 @@
+%h2 Create New Stream
+%p 
+  Currently, there is only one type of stream. <br/>
+  This is a user watch, which tracks their comments and submissions.
+%form{:method => 'post', :action => '/hners'}
+  %p
+    %label  Username 
+    %span{:style => 'font-size:smaller; color:#777'} (e.g. pg, patio11)
+    %input{:type => 'text', :name => 'user'}
+  %p
+    %label Filter: Points &gt;=
+    %input{:type => 'text', :name => 'points', :value => 1}
+  %p
+    %label Give it a descriptive title<br/>
+    %input{:type => 'text', :name => 'title', :size => 42}
+  %p
+    %input{:type => 'hidden', :name => 'format', :value => 'html'}
+    %input{:type => 'submit', :value => 'Watch'}
+

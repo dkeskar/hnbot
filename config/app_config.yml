@@ -1,0 +1,17 @@
+
+# Example App configuration file
+# Do not check this file in to github or other public repositories
+# if you are going to store your token here. 
+
+development:
+  url_base: 'http://localhost:4567'
+  mavenn: 'http://mavenn.com'
+  apid: "99f4bf3ea0d737d2f58af6a8afa7a096304dc8c4"
+  token: "ec887807294022d532262f988e94f495"
+
+production:
+  url_base: 'http://hnbot.example.com'
+  mavenn: 'http://mavenn.com'
+  apid: "your-mavenn-apid"
+  token: "your-mavenn-token"
+
