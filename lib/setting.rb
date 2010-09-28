@@ -20,7 +20,8 @@ class Setting
     when "Fixnum"; setting.value.to_i
     when "Time"; Time.parse(setting.value)
     when "Float"; setting.value.to_f
-    when "Boolean"; (setting.value == "false") ? false : true
+    when "TrueClass"; true
+    when "FalseClass"; false
     else; setting.value
     end
   end

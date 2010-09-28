@@ -18,6 +18,7 @@ set :use_sudo, false
 server domain, :app, :web, :db
 
 after "deploy:symlink", "deploy:whenever"
+after "deploy:update_code", "deploy:private_info"
 
 namespace :deploy do
   task :start do ; end
@@ -34,6 +35,12 @@ namespace :deploy do
     varstr = vars.keys.map {|x| "#{x}=#{vars[x]}"}.join('&')
     run "whenever  -f #{current_path}/config/schedule.rb --set '#{varstr}' --update-crontab #{application}"  
   end
+
+  task :private_info, :foles => :app do 
+    conf = File.read("config/private.yml")
+    put conf, "#{current_path}/config/app_config.yml"
+  end
+
 # if you're still using the script/reapear helper you will need
 # these http://github.com/rails/irs_process_scripts
 

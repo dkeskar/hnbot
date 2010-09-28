@@ -6,7 +6,7 @@ class Crawler
   attr_accessor :max_pages, :prefix_url, :base_url, :newer_than
   attr_accessor :doc
 
-  def initialize(base_url, min_wait=23, var_wait=42, max_pages=10)
+  def initialize(base_url, min_wait=11, var_wait=42, max_pages=10)
     @base_url = base_url
     @min_wait = min_wait
     @var_wait = var_wait
@@ -15,11 +15,11 @@ class Crawler
   end
 
   def wait_interval
-    @min_wait + rand*@var_wait + rand*@var_wait
+    @min_wait + rand*@var_wait 
   end
 
   def self.decent_interval
-    23 + 42*rand
+    11 + 42*rand
   end
 
   def self.polite?(time)

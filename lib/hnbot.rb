@@ -26,7 +26,7 @@ class HNBot
   # Fetch newest comments (first page only)
   def self.fetch_comments
     last_fetch = Setting.getval(:method) || Time.now - 1.day
-    sleep 42*rand                     # create some variability
+    sleep 23*rand                     # create some variability
     Setting.setval(:method, Time.now)
     CommentList.new(NEW_CMTS).crawl   # only gets one page
   end
@@ -38,8 +38,8 @@ class HNBot
     return false if fetching
 
     Setting.setval(:fetch_postings_underway, true)
-    Setting.setval(:method, Time.now)
-    sleep 42*rand
+    Setting.setval(:method, (tm = Time.now))
+    sleep 10*rand
 
     link = Link.new(BASE_URL)
     Posting.unfetched.each do |posting|
@@ -51,8 +51,9 @@ class HNBot
         # soldier on 
       end
     end
-    tm = (Time.now - tm)/1.minute
-    Setting.setval("fetch_postings_minutes", tm)
+    tm = ((Time.now - tm)/1.second).ceil
+  ensure 
+    Setting.setval("fetch_postings_seconds", tm)
     Setting.setval(:fetch_postings_underway, false)
 	end
 
