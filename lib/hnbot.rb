@@ -26,7 +26,7 @@ class HNBot
   # Fetch newest comments (first page only)
   def self.fetch_comments
     last_fetch = Setting.getval(:method) || Time.now - 1.day
-    sleep 23*rand                     # create some variability
+    sleep 42*rand                     # create some variability
     Setting.setval(:method, Time.now)
     CommentList.new(NEW_CMTS).crawl   # only gets one page
   end
