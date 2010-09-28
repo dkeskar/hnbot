@@ -1,9 +1,7 @@
-require 'watchbot'
-require 'daemons'
 
 # HNBot lets you track comments made by people you follow via mavenn, 
 #
-class HNBot < Watchbot
+class HNBot 
   BASE_URL = 'http://news.ycombinator.com'
   NEW_LNKS = "#{BASE_URL}/newest"
   NEW_CMTS = "#{BASE_URL}/newcomments"
@@ -13,12 +11,9 @@ class HNBot < Watchbot
   # Politeness restricts us to /, /newest, /newcomments and /item with a
   # wait_interval between 30sec to 1min.
   #
-  # Daemonized fetch of /newcomments storing Comments and stub Postings
-  # Fetches full Postings info less often, say every 10 min.
-
-  def initialize
-    self.load    
-  end
+  # Fetch of /newcomments storing Comments and stub Postings
+  # Fetches full Postings for stub postings
+  # Posts activity to mavenn
 
 	def self.stats
 		{ 
@@ -30,11 +25,22 @@ class HNBot < Watchbot
 
   # Fetch newest comments (first page only)
   def self.fetch_comments
-    CommentList.new(NEW_CMTS).crawl
+    last_fetch = Setting.getval(:method) || Time.now - 1.day
+    sleep 42*rand                     # create some variability
+    Setting.setval(:method, Time.now)
+    CommentList.new(NEW_CMTS).crawl   # only gets one page
   end
 
   # Fetch posts on which watchlist avatars have commented. 
 	def self.fetch_postings
+    last_fetch = Setting.getval(:method) || Time.now - 1.day
+    fetching = Setting.getval(:fetch_postings_underway)
+    return false if fetching
+
+    Setting.setval(:fetch_postings_underway, true)
+    Setting.setval(:method, Time.now)
+    sleep 42*rand
+
     link = Link.new(BASE_URL)
     Posting.unfetched.each do |posting|
       begin
@@ -45,12 +51,16 @@ class HNBot < Watchbot
         # soldier on 
       end
     end
+    tm = (Time.now - tm)/1.minute
+    Setting.setval("fetch_postings_minutes", tm)
+    Setting.setval(:fetch_postings_underway, false)
 	end
 
   # Post latest activity to mavenn via API
-  def post_activity
-    before = self.last_post
-    self.set(:last_post => Time.now)
+  def self.post_activity
+    before = Setting.getval(:method) || Time.now - 1.day
+    Setting.setval(:method, Time.now)
+
     Stream.all.each do |stream|
       activity = stream.tuples(:since => before)
       json = activity.to_json
@@ -61,10 +71,11 @@ class HNBot < Watchbot
 
       req = Net::HTTP::Post.new(uri.request_uri)
       req.set_form_data(:activity => activity)
+
       req.basic_auth(SiteConfig.apid, SiteConfig.token)
       rsp = http.request(req)
 
-      sleep 2
+      sleep 30
     end
   end
 

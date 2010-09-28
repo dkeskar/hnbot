@@ -61,8 +61,7 @@ class CommentList < Crawler
         count += 1 
       end
     end
-    # since we only fetch one page at a time, wait here
-    sleep wait_interval
+    # since we only fetch one page at a time, don't wait 
     count
   end
 

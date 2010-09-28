@@ -19,6 +19,15 @@
 
 # Learn more: http://github.com/javan/whenever
 
-every 30.minutes do 
-  runner "HackerNews.refresh"
+every 2.minutes do 
+  runner "HNBot.fetch_comments"
 end
+
+every 10.minutes do 
+  runner "HNBot.fetch_postings"
+end
+
+every 20.minutes do 
+  runner "HNBot.post_activity"
+end
+

@@ -18,6 +18,14 @@ class Crawler
     @min_wait + rand*@var_wait + rand*@var_wait
   end
 
+  def self.decent_interval
+    23 + 42*rand
+  end
+
+  def self.polite?(time)
+    (Time.now - time)/1.second > decent_interval
+  end
+
   # Fetch URI, deals with redirects
   def self.fetch(link, redir_limit = 5)
     raise "Too many HTTP redirects." if redir_limit == 0
