@@ -27,7 +27,7 @@ every 10.minutes do
   runner "HNBot.fetch_postings"
 end
 
-every 20.minutes do 
+every 15.minutes do 
   runner "HNBot.post_activity"
 end
 

@@ -66,27 +66,37 @@ class HNBot
 
   # Post latest activity to mavenn via API
   def self.post_activity
+    STDERR.puts "post_activity: begin" 
     before = Setting.getval(:method) || Time.now - 1.day
     Setting.setval(:method, Time.now)
-    STDERR.puts("post_activity: stubbed out") 
-    return false
 
-    Stream.all.each do |stream|
+    items = reqs = 0
+    mark_for_deletion = []
+    Stream.where(:mavenn.ne => false).all.each do |stream|
       activity = stream.tuples(:since => before)
-      json = activity.to_json
+      json = {:activity => activity}.to_json
 
       uri = "#{SiteConfig.mavenn}/2010-10-17/streams/#{stream.sid}/activity"
       uri = URI.parse(uri)
       http = Net::HTTP.new(uri.host, uri.port)
 
       req = Net::HTTP::Post.new(uri.request_uri)
-      req.set_form_data(:activity => activity)
+      req.content_type = "application/json"
+      req.body = json
 
       req.basic_auth(SiteConfig.apid, SiteConfig.token)
       rsp = http.request(req)
 
+      STDERR.puts "#{rsp.code} #{stream.title}"
+      items += activity.size and reqs += 1 if rsp.code == 200
+
+      mark_for_deletion << stream if rsp.code == 410 # gone
+      # Ignore 500s and 422
+
       sleep 30
     end
+    bad = 0; mark_for_deletion.each { |st| st.destroy; bad += 1 } 
+    STDERR.puts "post_activity: #{items}, #{reqs} reqs, deleted #{bad}"
   end
 
 end

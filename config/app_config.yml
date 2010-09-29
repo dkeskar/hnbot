@@ -10,7 +10,7 @@ development:
   token: "ec887807294022d532262f988e94f495"
 
 production:
-  url_base: 'http://hnbot.example.com'
+  url_base: 'http://nyx.memamsa.com'
   mavenn: 'http://mavenn.com'
   apid: "your-mavenn-apid"
   token: "your-mavenn-token"

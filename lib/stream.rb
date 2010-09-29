@@ -13,6 +13,7 @@ class Stream
   key :config, Hash
   key :cache, Hash    # cache config in effect
   key :status, String, :default => "Active"
+  key :mavenn, Boolean, :default => false
 
   # activity as [ {actor, object, action} ]
   # options can be :avatar, or :since
@@ -20,6 +21,8 @@ class Stream
     retval = []
 
     avatar = options[:avatar] || Avatar.first(:name => self.config[:user])
+    return [] if not avatar
+
     points = self.config[:points] || 1
     actor = {:person => avatar.name}
 

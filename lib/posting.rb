@@ -69,11 +69,27 @@ class Posting
 
   # Top posting by watched user activity in last 24 hours
   def self.top
-    # FIXME: Periodic map reduce to sort and gather by num watched avatar comments 
-    #
-    Posting.where(:valid.ne => false,
-      :updated_at.gte => (Time.now - 24.hours)
-    ).sort(:wacx.desc).limit(21).all
+    watched = Avatar.fields(:name => 0).where(:nwx.gt => 0).all 
+    watched = watched.map {|x| x.id}
+    pids = Comment.collection.group(
+      ['pid'], 
+      {
+        'posted_at' => {'$gte' => Time.now - 2.day}, 
+        'avatar_id' => {'$in' => watched}
+      },
+      {:cmts => 0.0},
+      "function(d, p) { p.cmts++ }"
+    )
+    pids.sort! { |a, b| b['cmts'] <=> a['cmts']}
+    query_pids = pids.map {|x| x['pid']}
+    query = Posting.where(:valid.ne => false, :pid => {'$in' => query_pids})
+    res = query.sort(:updated_at.desc).limit(21).all
+    pidmap = {}
+    res.each {|posting| pidmap[posting.pid] = posting}
+
+    sorted = []
+    pids.each { |pinfo| sorted << [pidmap[pinfo['pid']], pinfo['cmts'].to_i]  }
+    sorted
   end
 
   def invalid!

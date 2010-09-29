@@ -28,7 +28,14 @@ MongoMapper.config = {environs => {
   'host' => mongo_host, 'database' => mongo_db
 }}.with_indifferent_access
 
-MongoMapper.connection = Mongo::Connection.new(mongo_host)
+if environs == :development
+  port = Mongo::Connection::DEFAULT_PORT
+  opt = {:logger => Logger.new(STDERR)}
+else
+  port = nil
+  opt = {}
+end
+MongoMapper.connection = Mongo::Connection.new(mongo_host, port, opt)
 MongoMapper.database = mongo_db
 
 # connect forked processes to MongoDB

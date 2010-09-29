@@ -41,7 +41,4 @@ namespace :deploy do
     put conf, "#{current_path}/config/app_config.yml"
   end
 
-# if you're still using the script/reapear helper you will need
-# these http://github.com/rails/irs_process_scripts
-
 end
