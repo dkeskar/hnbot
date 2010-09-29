@@ -16,6 +16,7 @@ end
 before do 
   merge_json_data_into_params
 	params = params.with_indifferent_access if params.is_a?(Hash)
+  verify_mavenn_request
 end
 
 error do
@@ -31,11 +32,16 @@ helpers do
     #env.inject({}){|acc, (k,v)| acc[$1.downcase] = v if k =~ /^http_(.*)/i; acc}
     env.inject({}){|acc, (k,v)| acc[k] = v; acc}
   end
+
   def merge_json_data_into_params
     if request.content_type == 'application/json' and (request.post? or request.put?)
       json_data = JSON::parse(request.body.string)
       json_data.keys.each {|k| params[k] = json_data[k] }
     end
+  end
+
+  def verify_mavenn_request
+    params[:mavenn] = (env['HTTP_X_MAVENN_SIGNATURE'] == 'mavenn')
   end
 end
 
@@ -99,6 +105,10 @@ get '/hners/:stream_id.:format' do
     @stream = Stream.first(:sid => params[:stream_id])
     not_found and return if not @stream
     @activity = @stream.tuples
+    if !@activity.blank? && @stream.status != 'Active'
+      @stream.status = 'Active'
+      @stream.save
+    end
   end
   case params[:format]
   when :json, 'json'
@@ -129,6 +139,7 @@ post %r{/hners([\.](json|html))?$} do |specified, format|
   @stream.sid ||= Stream.generate_stream_id
   @stream.config = {:user => params[:user], :points => params[:points].to_i}
   @stream.title = params[:title]
+  @stream.mavenn = params[:mavenn] || false
   
   msg = "Stream created and queued for monitoring"
   if not @stream.save
