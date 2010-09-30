@@ -25,8 +25,8 @@ class HNBot
 
   # Fetch newest comments (first page only)
   def self.fetch_comments
-    last_fetch = Setting.getval(:method) || Time.now - 1.day
-    Setting.setval(:method, (tm = Time.now))
+    last_fetch = Setting.getval(:fetch_comments) || Time.now - 1.day
+    Setting.setval(:fetch_comments, (tm = Time.now))
     STDERR.puts("fetch_comments: begin #{tm}")
     sleep 42*rand                     # create some variability
     CommentList.new(NEW_CMTS).crawl   # only gets one page
@@ -35,13 +35,13 @@ class HNBot
   # Fetch posts on which watchlist avatars have commented. 
 	def self.fetch_postings
     count = 0
-    last_fetch = Setting.getval(:method) || Time.now - 1.day
+    last_fetch = Setting.getval(:fetch_postings) || Time.now - 1.day
     if fetching = Setting.getval(:fetch_postings_underway)
       STDERR.puts("fetch_posting: underway") 
       return false 
     end
 
-    Setting.setval(:method, (tm = Time.now))
+    Setting.setval(:fetch_postings, (tm = Time.now))
     STDERR.puts("fetch_postings: begin: #{tm}")
     sleep 10*rand
 
@@ -59,21 +59,22 @@ class HNBot
     end
     tm = ((Time.now - tm)/1.second).ceil
   ensure 
-    Setting.setval("fetch_postings_seconds", tm)
+    Setting.setval(:fetch_postings_seconds, tm)
     Setting.setval(:fetch_postings_underway, false)
     STDERR.puts("fetch_postings: did #{count} in #{tm || 0} sec")
 	end
 
   # Post latest activity to mavenn via API
   def self.post_activity
-    STDERR.puts "post_activity: begin" 
-    before = Setting.getval(:method) || Time.now - 1.day
-    Setting.setval(:method, Time.now)
+    STDERR.puts "post_activity: #{Time.now} " 
 
-    items = reqs = 0
+    items = reqs = scx = 0
     mark_for_deletion = []
     Stream.where(:mavenn.ne => false).all.each do |stream|
-      activity = stream.tuples(:since => before)
+      this_post = Time.now
+      activity = stream.tuples(:since => stream.posted_at)
+      scx += 1 
+      next if activity.blank?
       json = {:activity => activity}.to_json
 
       uri = "#{SiteConfig.mavenn}/2010-10-17/streams/#{stream.sid}/activity"
@@ -87,8 +88,12 @@ class HNBot
       req.basic_auth(SiteConfig.apid, SiteConfig.token)
       rsp = http.request(req)
 
-      STDERR.puts "#{rsp.code} #{stream.title}"
-      items += activity.size and reqs += 1 if rsp.code == 200
+      STDERR.puts "#{rsp.code} #{stream.title} #{activity.size} items"
+      if rsp.code == 200
+        items += activity.size 
+        reqs += 1 
+        stream.set(:posted_at => this_post)
+      end
 
       mark_for_deletion << stream if rsp.code == 410 # gone
       # Ignore 500s and 422
@@ -96,9 +101,11 @@ class HNBot
       sleep 30
     end
     bad = 0; mark_for_deletion.each { |st| st.destroy; bad += 1 } 
-    STDERR.puts "post_activity: #{items}, #{reqs} reqs, deleted #{bad}"
+  rescue Errno::ECONNREFUSED
+    STDERR.puts "**** post_activity: Server down?"
+  ensure
+    STDERR.puts "post_activity: #{items}, #{reqs} reqs, #{scx} mavenn, #{bad} deleted"
   end
 
 end
-
 

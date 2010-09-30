@@ -13,7 +13,9 @@ class Stream
   key :config, Hash
   key :cache, Hash    # cache config in effect
   key :status, String, :default => "Active"
+
   key :mavenn, Boolean, :default => false
+  key :posted_at, Time
 
   # activity as [ {actor, object, action} ]
   # options can be :avatar, or :since

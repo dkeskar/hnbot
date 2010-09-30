@@ -169,6 +169,7 @@ end
 # Delete a previously created stream if it exists
 # FIXME: Authenticate that the request came from mavenn
 delete '/hners/:sid.:format' do
+  not_found and return
   @stream = Stream.first(:sid => params[:sid])
   res = @stream ? "OK" : "Failed"
   case params[:format] 
