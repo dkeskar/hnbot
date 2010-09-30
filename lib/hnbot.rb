@@ -89,13 +89,13 @@ class HNBot
       rsp = http.request(req)
 
       STDERR.puts "#{rsp.code} #{stream.title} #{activity.size} items"
-      if rsp.code == 200
+      if rsp.code == '200'
         items += activity.size 
         reqs += 1 
         stream.set(:posted_at => this_post)
       end
 
-      mark_for_deletion << stream if rsp.code == 410 # gone
+      mark_for_deletion << stream if rsp.code == '410' # gone
       # Ignore 500s and 422
 
       sleep 30
