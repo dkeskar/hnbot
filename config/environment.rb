@@ -8,7 +8,7 @@ default_env = defined?(Sinatra) ? Sinatra::Base.environment : :development
 environs = ENV['APP_ENV'] || default_env  
 cur_path = File.dirname(__FILE__)
 
-SiteConfig = OpenStruct.new(:title => 'Hacker News Watch', :app => 'watchbots')
+SiteConfig = OpenStruct.new(:title => 'Hacker News Watch', :app => 'hnbot')
 
 # Load app configuration 
 conf = "#{File.dirname(__FILE__)}/app_config.yml" 

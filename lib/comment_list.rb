@@ -25,8 +25,9 @@ class CommentList < Crawler
       info = cmt.search("div/span.comhead")
       html = info.inner_html
 
-      if cid = html.match(/id=\"score_([^\"]+)\">/)
-        cid = cid[1]
+      if cid = cmt.search(".comhead a:nth-child(2)")
+        cid = cid.attr('href')
+        cid = cid.split('=').last if cid
       end
       tm = html.match(/\/a>\s+(\d+\s(second|minute|hour|day|month|year)s?\s+ago)\s+\|/)
       tm = Crawler.time_from_words(tm[1]) if tm and tm.size > 1
@@ -42,8 +43,8 @@ class CommentList < Crawler
       points = html.match(/span id=\"score.*>(\d+)\s+point(s)?</)
       points = points[1].to_i if points and points.size > 1
 
-      cmtr = html.match(/by\s+<a[^>]+>(\w+)<\/a>/)
-      cmtr = cmtr[1] if cmtr and cmtr.size > 1
+      cmtr = cmt.search(".comhead a:first")
+      cmtr = cmtr.text if cmtr
 
       $stderr.puts "C: #{cid} #{text.slice(0..42)}... #{cmtr} #{pid}"
 

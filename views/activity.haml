@@ -21,7 +21,8 @@
     - elsif item[:action][:type] == 'submit'
       %div{:class => "submit"}
         %div{:class => 'right'}
+          - mlnk = item[:action][:meta] ?  "#{item[:action][:meta][:points]} pts, #{item[:action][:meta][:comments]} cx" : "link" 
           %a{:href => "http://news.ycombinator.com/item?id=#{item[:action][:uid]}"}
-            = "#{item[:action][:meta][:points]} pts, #{item[:action][:meta][:comments]} cx"
-        %a{:href => item[:action][:url]}= item[:action][:title]
+            = mlnk
+        %a{:href => item[:object][:url]}= item[:object][:title]
     </div>

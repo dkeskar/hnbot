@@ -35,7 +35,10 @@ class Stream
     
     newer = {}
     newer[:created_at.gte] = options[:since] if options[:since]
-    comments = avatar.comments.where(:pntx.gte => points).where(newer)
+    #comments = avatar.comments.where(:pntx.gte => points).where(newer)
+    # HN Redesign::Comments don't show points
+    comments = avatar.comments.where(newer)
+    
     comments = comments.sort(:posted_at.desc).limit(100).all
     
     submits = avatar.postings.where(newer).sort(:posted_at.desc).limit(100).all
@@ -54,16 +57,15 @@ class Stream
     combined = comments + submits
     combined.each do |item| 
       action = item.actify
+      object = pmap[item.pid] 
+      object = item.objectify if !object && item.is_a?(Posting)
       thread = []
       if item.is_a?(Comment)
-        object = pmap[item.pid]
         item.contexts.push(item.parent_cid).uniq.each do |tcid|
           thread << cmap[tcid]
         end
         $stderr.puts "thread: #{item.text.slice(0..42)} #{thread}"
         action[:meta].update(:thread => thread)
-      elsif item.is_a?(Posting)
-        object = nil
       end
       retval << {:object => object, :action => action, :actor => actor}
     end

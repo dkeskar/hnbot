@@ -4,7 +4,7 @@ require 'hpricot'
 # General utilities and functions for crawling and parsing 
 class Crawler 
   attr_accessor :max_pages, :prefix_url, :base_url, :newer_than
-  attr_accessor :doc
+  attr_accessor :doc, :doc_url
 
   def initialize(base_url, min_wait=11, var_wait=42, max_pages=10)
     @base_url = base_url
@@ -12,6 +12,7 @@ class Crawler
     @var_wait = var_wait
     @max_pages = max_pages
     @newer_than = 10.day
+    @doc_url = @base_url
   end
 
   def wait_interval
@@ -33,7 +34,7 @@ class Crawler
     rsp = Net::HTTP.get_response(url)
     case rsp 
     when Net::HTTPSuccess; rsp.body
-    when Net::HTTPRedirection; fetch(rsp['location'], redir_lim - 1)
+    when Net::HTTPRedirection; fetch(rsp['location'], redir_limit - 1)
     else; rsp.error!
     end
   end
@@ -56,8 +57,16 @@ class Crawler
 
   def full_url(link)
     return link if link.nil? or link =~ /^http/
-    link = "/#{link}" if link !~ /^\//
-    "#{@prefix_url || @base_url}#{link}"
+    if link !~ /^\//
+      cur_base = @base_url.gsub(/\/[^\/]*$/, '/')
+    else 
+      if match = @base_url.match(/((http:\/\/)?[^\/]*)(\/|$)/) and match[1]
+        cur_base = match[1]
+      else
+        cur_base = @base_url
+      end
+    end
+    "#{cur_base}#{link}"
   end
 
   def crawl(url=nil, page=1)

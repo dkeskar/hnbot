@@ -18,7 +18,7 @@
     - item = posting.first
     - watch = posting.last
     %li
-      - if !item.title.blank? and !item.link.blank?
+      - if item and !item.title.blank? and !item.link.blank?
         %div.meta{:style => 'float:right;'}
           %a{:href => "#{ycit}#{item.pid}"}= "#{item.pntx} pt, #{item.cmtx} cx"
         %div

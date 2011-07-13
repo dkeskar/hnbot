@@ -26,10 +26,12 @@ class Posting
   def self.add(info={})
     set_data = {}
     added = true
-    if Posting.exists?(:pid => info[:pid])
+    posting = Posting.where(:pid => info[:pid])
+    posting = posting.fields(:pid => 1, :posted_at => 1).first
+    if posting 
       # posted at will have larger error drift if we set it all the time. 
       # Better if set first time and never changed later. 
-      [:posted_at, :created_at].each {|k| info.delete(k) }
+      info.delete(:posted_at) if not posting.posted_at.blank?
       added = false
       return added if info.keys.size == 1 
     else
@@ -49,18 +51,13 @@ class Posting
 
   def objectify 
     # thumb and summary to come soon
-    tuple_info
+    { :url => self.link, :title => self.title,
+      :meta => {:person => self.name, :points => self.pntx, :comments => self.cmtx}
+    }
   end
 
   def actify
-    tuple_info.merge(:type => 'submit')
-  end
-
-  def tuple_info
-    { :url => self.link, :title => self.title, :time => self.posted_at.to_s, 
-      :meta => {:person => self.name, :points => self.pntx, :comments => self.cmtx},
-      :uid => self.pid
-    }
+    { :type => 'submit', :uid => self.pid, :time => self.posted_at.to_s}
   end
 
   def self.unfetched

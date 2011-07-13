@@ -15,13 +15,13 @@ class HNBot
   # Fetches full Postings for stub postings
   # Posts activity to mavenn
 
-	def self.stats
-		{ 
-			:posts => Posting.count, 
-			:avatars => Avatar.count,
+  def self.stats
+    { 
+      :posts => Posting.count, 
+      :avatars => Avatar.count,
       :watched => Avatar.watched(:count),
-		}
-	end
+    }
+  end
 
   # Fetch newest comments (first page only)
   def self.fetch_comments
@@ -33,7 +33,7 @@ class HNBot
   end
 
   # Fetch posts on which watchlist avatars have commented. 
-	def self.fetch_postings
+  def self.fetch_postings
     count = 0
     last_fetch = Setting.getval(:fetch_postings) || Time.now - 1.day
     if fetching = Setting.getval(:fetch_postings_underway)
@@ -45,7 +45,7 @@ class HNBot
     STDERR.puts("fetch_postings: begin: #{tm}")
     sleep 10*rand
 
-    link = Link.new(BASE_URL)
+    link = Link.new(ITEM_URL_PREFIX)
     Posting.unfetched.each do |posting|
       begin
         Setting.setval(:fetch_postings_underway, true)
@@ -62,7 +62,7 @@ class HNBot
     Setting.setval(:fetch_postings_seconds, tm)
     Setting.setval(:fetch_postings_underway, false)
     STDERR.puts("fetch_postings: did #{count} in #{tm || 0} sec")
-	end
+  end
 
   # Post latest activity to mavenn via API
   def self.post_activity

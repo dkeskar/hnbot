@@ -11,7 +11,7 @@ class Link < Crawler
   def item=(posting)
     raise ArgumentError, "Expect Posting" if not posting.is_a?(Posting)
     @posting = posting
-    @base_url = "#{@prefix_url}/item?id=#{@posting.pid}"
+    @base_url = "#{@prefix_url}#{@posting.pid}"
   end
 
   def url_next
