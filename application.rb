@@ -103,7 +103,7 @@ get '/hners/:stream_id.:format' do
     @stream = Stream.new(:title => "HN Users Preview")
     @activity = Stream.preview
   else
-    @stream = Stream.first(:sid => params[:stream_id])
+    @stream = Stream.where(:sid => params[:stream_id]).first
     not_found and return if not @stream
     @activity = @stream.tuples
     if !@activity.blank? && @stream.status != 'Active'
