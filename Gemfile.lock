@@ -1,3 +1,9 @@
+GIT
+  remote: git://github.com/thoughtbot/factory_girl.git
+  revision: b6bd89760f259ee76f7f36e0387a8c56f7fe0468
+  specs:
+    factory_girl (2.0.0.rc4)
+
 PATH
   remote: /home/www/github/sinatra-reloader
   specs:
@@ -77,6 +83,7 @@ PLATFORMS
 DEPENDENCIES
   activerecord
   bundler (~> 1.0.0)
+  factory_girl!
   haml
   hpricot
   json

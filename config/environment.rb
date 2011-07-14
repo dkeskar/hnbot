@@ -33,6 +33,7 @@ else
   port = nil
   opt = {}
 end
+
 MongoMapper.connection = Mongo::Connection.new(mongo_host, port, opt)
 MongoMapper.database = mongo_db
 

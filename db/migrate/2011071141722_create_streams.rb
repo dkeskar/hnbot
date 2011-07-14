@@ -13,6 +13,6 @@ class CreateStreams < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :users
+    drop_table :streams
   end
 end

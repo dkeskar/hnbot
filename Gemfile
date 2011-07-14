@@ -16,4 +16,5 @@ group :development do
   gem 'rspec', '~> 2.3.0'
   gem 'rack-test', :require => 'rack/test'
   gem 'ruby-debug'
+  gem 'factory_girl', :git => 'git://github.com/thoughtbot/factory_girl.git'
 end

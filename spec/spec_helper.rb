@@ -16,15 +16,23 @@ require 'application'
 MongoMapper.connection = Mongo::Connection.new(ENV["MONGO_HOST"] || 'localhost')
 MongoMapper.database = "#{SiteConfig.app}_#{Sinatra::Base.environment}"
 
+# configure FactoryGirl
+FactoryGirl.find_definitions
+
 RSpec.configure do |config|
+  # cleanup data in db
+  [Avatar, Stream].each do |table|
+    table.delete_all
+  end
+
   # enable filtering for examples
   config.filter_run :wip => true
   config.run_all_when_everything_filtered = true
 
   # reset database before each example is run
-  config.after(:each) do 
-    MongoMapper.database.collections.each do |coll| 
-      coll.remove unless c.name.match(/^system\./)
-    end
-  end 
+  #config.after(:each) do 
+  #  MongoMapper.database.collections.each do |coll| 
+  #    coll.remove unless c.name.match(/^system\./)
+  #  end
+  #end 
 end

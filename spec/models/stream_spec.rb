@@ -1,6 +1,10 @@
 require 'spec_helper'
 
-describe Stream, :wip => true do
+describe Stream do
+  before :all do
+    Factory :patio11_avatar 
+  end
+
   describe '#create' do
     it 'should create new stream record' do
       stream = Stream.create :sid => 1, :title => 'Test', :config => {:user => 'patio11'}
