@@ -1,30 +1,11 @@
-class Comment
-  include MongoMapper::Document
-  
-  key :avatar_id, ObjectId
-  key :name, String   # denormalized
-  #
-  # These are ids as used by hacker news
-  key :pid, String
-  key :cid, String
-  key :parent_cid, String       
-
-  # maintain thread contexts within this document
-  key :contexts, Array
-  key :responses, Array 
-
-  key :text, String
-  key :pntx, Integer
-  key :nrsp, Integer, :default => 0
-  key :posted_at, Time
-  
+class Comment < ActiveRecord::Base
   belongs_to :avatar
-  belongs_to :parent, :class => "Comment"
+  #belongs_to :parent, :class => "Comment"
   
   def self.add(info={})
     set_data = {}
     added = true
-    if Comment.exists?(:cid => info[:cid]) 
+    unless Comment.find_by_cid(info[:cid]).nil?
       # posted at will have larger error drift if we set it all the time. 
       # We set first time and never changed later. 
       [:posted_at, :created_at].each {|k| info.delete(k) }
@@ -33,15 +14,12 @@ class Comment
       info[:created_at] = Time.now
     end
     info[:updated_at] = Time.now
-    Comment.collection.update({:cid => info[:cid]}, 
-      {"$set" => info}, 
-      :upsert => true
-    )
+    Comment.find_or_create_by_cid(info[:cid]).update_attributes(info) 
     added
   end
 
   def self.watched_for(pid)
-    Comment.where(:pid => pid, :avatar_id.ne => nil).sort(:posted_at.asc).all
+    Comment.where("pid = #{pid} and avatar_id").order('posted_at asc').all
   end
 
   def actify

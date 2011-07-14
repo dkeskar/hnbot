@@ -4,7 +4,7 @@ class Avatar < ActiveRecord::Base
   include ValidProperty
 
   has_many :postings
-  #has_many :comments
+  has_many :comments
 
   class NoSuchUser < StandardError; end
 

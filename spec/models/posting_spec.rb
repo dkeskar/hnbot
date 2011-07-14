@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Posting, :wip => true do
+describe Posting do
   before :all do
     @post_pid_1 = Factory :post_pid_1
   end
