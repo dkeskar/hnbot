@@ -1,8 +1,8 @@
 require 'rubygems'
-require 'sinatra'
-require 'spec'
-require 'spec/interop/test'
-require 'rack/test'
+
+require 'bundler/setup'
+
+Bundler.require :default, :development
 
 # set test environment
 Sinatra::Base.set :environment, :test
@@ -16,7 +16,7 @@ require 'application'
 MongoMapper.connection = Mongo::Connection.new(ENV["MONGO_HOST"] || 'localhost')
 MongoMapper.database = "#{SiteConfig.app}_#{Sinatra::Base.environment}"
 
-Spec::Runner.configure do |config|
+RSpec.configure do |config|
   # reset database before each example is run
   config.after(:each) do 
     MongoMapper.database.collections.each do |coll| 
