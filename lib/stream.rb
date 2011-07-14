@@ -1,5 +1,4 @@
-class Stream
-  include MongoMapper::Document
+class Stream < ActiveRecord::Base
   before_save :update_avatar_settings
   before_destroy :unwatch_avatar
 
@@ -8,14 +7,12 @@ class Stream
 	AZSET = ("a".."z").to_a + ("A".."Z").to_a + (0..9).to_a
 	AZLEN = AZSET.size
 
-  key :sid, String    # mavenn stream id
-  key :title, String
-  key :config, Hash
-  key :cache, Hash    # cache config in effect
-  key :status, String, :default => "Active"
-
-  key :mavenn, Boolean, :default => false
-  key :posted_at, Time
+  serialize :config
+  serialize :cache    # cache config in effect
+  
+  def posted_at
+    created_at
+  end
 
   # activity as [ {actor, object, action} ]
   # options can be :avatar, or :since
@@ -108,6 +105,8 @@ class Stream
   end
 
   def update_avatar_settings
+    self.cache ||= {}
+    
     previous = self.cache ? self.cache[:user] :nil
     Avatar.unwatch(previous) if previous
     self.cache[:user] = self.config[:user]

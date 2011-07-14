@@ -8,8 +8,12 @@ gem 'hpricot'
 gem 'mongo_mapper'
 gem 'json'
 
+gem 'activerecord', :require => 'active_record'
+gem 'sqlite3'
+
 group :development do
-  gem 'sinatra-reloader', :git => 'git://github.com/useruby/sinatra-reloader.git'
+  gem 'sinatra-reloader', :path => '/home/www/github/sinatra-reloader'
   gem 'rspec', '~> 2.3.0'
+  gem 'rack-test', :require => 'rack/test'
   gem 'ruby-debug'
 end

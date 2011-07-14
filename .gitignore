@@ -3,3 +3,5 @@ log/*
 *.swo
 vendor/bundler/
 .bundle
+tmp
+config/database.yml

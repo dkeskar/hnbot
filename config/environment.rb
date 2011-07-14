@@ -37,11 +37,16 @@ MongoMapper.connection = Mongo::Connection.new(mongo_host, port, opt)
 MongoMapper.database = mongo_db
 
 # connect forked processes to MongoDB
-if defined?(PhusionPassenger)
-  PhusionPassenger.on_event(:starting_worker_process) do |forked|
-    MongoMapper.connection.connect_to_master if forked
-  end
-end
+#if defined?(PhusionPassenger)
+#  PhusionPassenger.on_event(:starting_worker_process) do |forked|
+#    MongoMapper.connection.connect_to_master if forked
+#  end
+#end
+
+# establish connection with db
+dbconfig = YAML::load(File.open('config/database.yml'))
+ActiveRecord::Base.establish_connection(dbconfig[environs.to_s])
+ActiveRecord::Migrator.up('db/migrate') 
 
 # load models 
 $LOAD_PATH.unshift("#{File.dirname(__FILE__)}/../lib")
