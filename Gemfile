@@ -5,7 +5,6 @@ gem 'bundler', '~> 1.0.0'
 gem 'sinatra'
 gem 'haml'
 gem 'hpricot'
-gem 'mongo_mapper'
 gem 'json'
 
 gem 'activerecord', :require => 'active_record'

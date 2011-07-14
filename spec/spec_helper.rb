@@ -12,15 +12,11 @@ Sinatra::Base.set :logging, false
 
 require 'application'
 
-# establish in-memory database for testing
-MongoMapper.connection = Mongo::Connection.new(ENV["MONGO_HOST"] || 'localhost')
-MongoMapper.database = "#{SiteConfig.app}_#{Sinatra::Base.environment}"
-
 # configure FactoryGirl
 FactoryGirl.find_definitions
 
 RSpec.configure do |config|
-  # cleanup data in db
+  # reset db
   [Avatar, Stream, Setting, Posting, Comment].each do |table|
     table.delete_all
   end
@@ -28,11 +24,4 @@ RSpec.configure do |config|
   # enable filtering for examples
   config.filter_run :wip => true
   config.run_all_when_everything_filtered = true
-
-  # reset database before each example is run
-  #config.after(:each) do 
-  #  MongoMapper.database.collections.each do |coll| 
-  #    coll.remove unless c.name.match(/^system\./)
-  #  end
-  #end 
 end

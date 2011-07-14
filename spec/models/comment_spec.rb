@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Comment, :wip => true do
+describe Comment do
   before :all do
     Factory :comment_pid_1
   end

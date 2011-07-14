@@ -5,6 +5,14 @@ describe Avatar do
     @patio11_avatar = Factory :patio11_avatar
   end
 
+  describe '#new' do
+    it 'should require a name' do
+      @avatar = Avatar.new
+      @avatar.should_not be_valid
+      @avatar.errors[:name].should include("can't be empty")
+    end
+  end
+
   describe '#watch' do
     it 'should increment watcher counter' do
       avatar = Avatar.find_by_name(@patio11_avatar.name)

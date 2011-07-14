@@ -19,7 +19,7 @@ class Stream < ActiveRecord::Base
   def tuples(options={})
     retval = []
 
-    avatar = options[:avatar] || Avatar.first(:name => self.config[:user])
+    avatar = options[:avatar] || Avatar.find_by_name(self.config[:user])
     return [] if not avatar
 
     points = self.config[:points] || 1
