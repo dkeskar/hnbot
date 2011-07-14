@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Avatar, :wip => true do
+describe Avatar do
   before :all do
     @patio11_avatar = Factory :patio11_avatar
   end
