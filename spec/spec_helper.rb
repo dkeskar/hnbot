@@ -21,7 +21,7 @@ FactoryGirl.find_definitions
 
 RSpec.configure do |config|
   # cleanup data in db
-  [Avatar, Stream].each do |table|
+  [Avatar, Stream, Setting, Posting].each do |table|
     table.delete_all
   end
 
