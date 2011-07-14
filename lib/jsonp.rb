@@ -1,5 +1,4 @@
 require 'sinatra/base'
-require 'json'
 
 module Sinatra
   module Jsonp

@@ -1,5 +1,4 @@
 require 'net/http'
-require 'hpricot'
 
 # General utilities and functions for crawling and parsing 
 class Crawler 

@@ -1,8 +1,6 @@
-require 'rubygems'
-require 'mongo_mapper'
-require 'ostruct'
-
 $KCODE = 'u'
+
+require 'ostruct'
 
 default_env = defined?(Sinatra) ? Sinatra::Base.environment : :development
 environs = ENV['APP_ENV'] || default_env  

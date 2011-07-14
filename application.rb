@@ -1,6 +1,7 @@
 require 'rubygems'
-require 'sinatra'
-require 'haml'
+require 'bundler/setup'
+
+Bundler.require :default
 
 require 'config/environment'
 
