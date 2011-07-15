@@ -1,6 +1,10 @@
 $KCODE = 'u'
 
+require 'rubygems'
+require 'bundler/setup'
 require 'ostruct'
+
+Bundler.require :default
 
 default_env = defined?(Sinatra) ? Sinatra::Base.environment : :development
 environs = ENV['APP_ENV'] || default_env  

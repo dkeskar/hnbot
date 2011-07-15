@@ -5,3 +5,4 @@ vendor/bundler/
 .bundle
 tmp
 config/database.yml
+db/*.sqlite3
