@@ -4,8 +4,9 @@ GIT
   specs:
     factory_girl (2.0.0.rc4)
 
-PATH
-  remote: /home/www/github/sinatra-reloader
+GIT
+  remote: git://github.com/useruby/sinatra-reloader.git
+  revision: fd6ec1f81e2747cde7f50bdd47d3fe061fcdc59a
   specs:
     sinatra-reloader (0.5.0)
       sinatra (~> 1.0)

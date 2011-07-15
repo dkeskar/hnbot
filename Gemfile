@@ -11,7 +11,7 @@ gem 'activerecord', :require => 'active_record'
 gem 'sqlite3'
 
 group :development do
-  gem 'sinatra-reloader', :path => '/home/www/github/sinatra-reloader'
+  gem 'sinatra-reloader', :git => 'git://github.com/useruby/sinatra-reloader.git'
   gem 'rspec', '~> 2.3.0'
   gem 'rack-test', :require => 'rack/test'
   gem 'ruby-debug'
