@@ -3,6 +3,10 @@ require 'spec_helper'
 describe Posting do
   before :all do
     @post_pid_1 = Factory :post_pid_1
+
+    [3,4,5].each do |cid|
+      Factory "comment_cid_#{cid}".to_sym
+    end
   end
 
   describe '#add' do
@@ -26,7 +30,7 @@ describe Posting do
     end
   end
 
-  describe '#top' do
+  describe '#top', :wip => true do
     it 'should return top posting by watched user activity in last 24 hours' do
       Posting.top.should_not be_empty
     end

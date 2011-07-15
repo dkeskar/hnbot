@@ -46,27 +46,21 @@ class Posting < ActiveRecord::Base
 
   # Top posting by watched user activity in last 24 hours
   def self.top
-    #watched = Avatar.fields(:name => 0).where(:nwx.gt => 0).all 
-    #watched = watched.map {|x| x.id}
-    #pids = Comment.collection.group(
-    #  ['pid'], 
-    #  {
-    #    'posted_at' => {'$gte' => Time.now - 2.day}, 
-    #    'avatar_id' => {'$in' => watched}
-    #  },
-    #  {:cmts => 0.0},
-    #  "function(d, p) { p.cmts++ }"
-    #)
-    #pids.sort! { |a, b| b['cmts'] <=> a['cmts']}
-    #query_pids = pids.map {|x| x['pid']}
-    #query = Posting.where(:valid.ne => false, :pid => {'$in' => query_pids})
-    #res = query.sort(:updated_at.desc).limit(21).all
-    #pidmap = {}
-    #res.each {|posting| pidmap[posting.pid] = posting}
+    watched = Avatar.where('nwx > 0').all 
+    watched = watched.map {|x| x.id}
+    
+    two_days_before = (Time.now - 2.day).strftime '%Y-%m-%d'
+    pids = Comment.select('pid, count(*) as cmts').where("posted_at > #{two_days_before} and avatar_id in (#{watched.join(',')})").group(:pid).all
+    
+    pids.sort! { |a, b| b['cmts'] <=> a['cmts']}
+    query_pids = pids.map {|x| x['pid']}
+    res = Posting.where("pid in (#{query_pids.join(',')}) and valid <> 0").order('updated_at desc').limit(21).all
+    pidmap = {}
+    res.each {|posting| pidmap[posting.pid] = posting}
 
-    #sorted = []
-    #pids.each { |pinfo| sorted << [pidmap[pinfo['pid']], pinfo['cmts'].to_i]  }
-    #sorted
+    sorted = []
+    pids.each { |pinfo| sorted << [pidmap[pinfo['pid']], pinfo['cmts'].to_i]  }
+    sorted
   end
 
 end
