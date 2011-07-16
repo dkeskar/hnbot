@@ -48,7 +48,7 @@ class CommentList < Crawler
 
       $stderr.puts "C: #{cid} #{text.slice(0..42)}... #{cmtr} #{pid}"
 
-      avatar = Avatar.first_or_create(:name => cmtr)
+      avatar = Avatar.find_or_create_by_name(cmtr)
       # Add the comment 
       newcmt = Comment.add(:avatar_id => avatar.id, :name => cmtr,
                   :cid => cid, :pid => pid, :nrsp => 0,

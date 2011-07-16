@@ -1,3 +1,5 @@
+require 'rubygems'
+require 'sinatra'
 require 'config/environment'
 
 configure(:development) do |c|
@@ -60,7 +62,7 @@ get %r{/watch(/([\w]+))?} do
 		@highlight = opt.last
 	end
 	$stderr.puts "highlight #{@highlight}"
-	@watched = Avatar.where(:nwx.gt => 0).sort(:name.asc).all
+	@watched = Avatar.watched
 	haml :watch
 end
 
